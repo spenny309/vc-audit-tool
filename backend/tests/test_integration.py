@@ -12,8 +12,8 @@ def test_full_pipeline_produces_valid_report_for_all_sectors(sector):
     assert isinstance(report, ValuationReport)
     assert report.company_name == "Test Co"
     assert report.methodology == "Comparable Company Analysis"
-    assert report.fair_value_mm > 0
     assert report.mean_revenue_multiple > 0
+    assert report.fair_value_mm == round(report.mean_revenue_multiple * 50.0, 2)
     assert len(report.comps_used) >= 2
     assert len(report.assumptions) >= 3
     assert len(report.citations) >= 1
