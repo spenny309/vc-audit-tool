@@ -29,6 +29,8 @@ def create_app() -> Flask:
             return jsonify({"error": type(e).__name__, "message": str(e), "status": 422}), 422
         except CalculationError as e:
             return jsonify({"error": "CalculationError", "message": str(e), "status": 500}), 500
+        except Exception as e:
+            return jsonify({"error": "InternalError", "message": str(e), "status": 500}), 500
 
     return app
 
