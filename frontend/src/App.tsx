@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ValuationForm } from './components/ValuationForm';
 import { ValuationReport } from './components/ValuationReport';
-import { valuate, ValuationRequest, ValuationReport as ReportData } from './api/client';
+import { valuate } from './api/client';
+import type { ValuationRequest, ValuationReport as ReportData } from './api/client';
 
 export default function App() {
   const [report, setReport] = useState<ReportData | null>(null);

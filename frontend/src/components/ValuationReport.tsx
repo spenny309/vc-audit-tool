@@ -1,4 +1,4 @@
-import { ValuationReport as ReportData } from '../api/client';
+import type { ValuationReport as ReportData } from '../api/client';
 
 interface Props {
   report: ReportData;

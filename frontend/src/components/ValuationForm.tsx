@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getSectors, ValuationRequest } from '../api/client';
+import { getSectors } from '../api/client';
+import type { ValuationRequest } from '../api/client';
 
 interface Props {
   onSubmit: (request: ValuationRequest) => void;
