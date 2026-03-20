@@ -41,6 +41,7 @@ Navigate to `http://localhost:5173`.
 
 ```bash
 cd backend
+venv\Scripts\activate   # Windows — activates the virtualenv
 pytest -v
 ```
 
