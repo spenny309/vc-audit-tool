@@ -6,7 +6,7 @@ from models.exceptions import ValuationError
 
 
 def make_context():
-    return CompsContext(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    return CompsContext(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
 
 
 def test_execute_returns_valuation_report():
@@ -19,7 +19,7 @@ def test_execute_returns_valuation_report():
 def test_report_has_all_fields_populated():
     ctx = make_context()
     report = CompsPipeline().execute(ctx)
-    assert report.company_name == "Basis AI"
+    assert report.company_name == "Modus"
     assert report.fair_value_mm > 0
     assert report.mean_revenue_multiple > 0
     assert len(report.comps_used) >= 2

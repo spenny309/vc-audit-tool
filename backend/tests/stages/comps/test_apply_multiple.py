@@ -4,7 +4,7 @@ from pipeline.comps.stages.apply_multiple import ApplyMultipleStage
 
 
 def make_context_with_multiple():
-    ctx = CompsContext(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    ctx = CompsContext(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     ctx.mean_revenue_multiple = 8.0
     return ctx
 

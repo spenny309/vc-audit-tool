@@ -6,7 +6,7 @@ from schemas.context import CompsContext
 
 
 CANNED_REPORT = ValuationReport(
-    company_name="Basis AI",
+    company_name="Modus",
     methodology="Comparable Company Analysis",
     fair_value_mm=80.0,
     mean_revenue_multiple=8.0,
@@ -15,7 +15,7 @@ CANNED_REPORT = ValuationReport(
     ],
     assumptions=["Mean EV/Revenue multiple of 8.0x across 1 comparables"],
     citations=["Mock dataset"],
-    explanation="Basis AI was valued at $80.0M.",
+    explanation="Modus was valued at $80.0M.",
 )
 
 
@@ -26,7 +26,7 @@ class MockPipeline(Pipeline[CompsContext]):
 
 def test_model_delegates_to_pipeline():
     model = CompsModel(pipeline=MockPipeline())
-    request = ValuationRequest(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    request = ValuationRequest(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     report = model.run(request)
     assert report == CANNED_REPORT
 
@@ -39,11 +39,11 @@ def test_model_passes_correct_context_to_pipeline():
             captured["context"] = context
             return CANNED_REPORT
 
-    request = ValuationRequest(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    request = ValuationRequest(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     CompsModel(pipeline=CapturingPipeline()).run(request)
 
     ctx = captured["context"]
-    assert ctx.company_name == "Basis AI"
+    assert ctx.company_name == "Modus"
     assert ctx.sector == Sector.SAAS
     assert ctx.revenue_mm == 10.0
 

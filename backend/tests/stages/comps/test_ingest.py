@@ -4,21 +4,21 @@ from pipeline.comps.stages.ingest import CompsIngestStage
 
 
 def make_context(**kwargs):
-    defaults = dict(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    defaults = dict(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     return CompsContext(**{**defaults, **kwargs})
 
 
 def test_strips_whitespace_from_company_name():
-    ctx = make_context(company_name="  Basis AI  ")
+    ctx = make_context(company_name="  Modus  ")
     result = CompsIngestStage().execute(ctx)
-    assert result.company_name == "Basis AI"
+    assert result.company_name == "Modus"
 
 
 def test_appends_target_to_assumptions():
     ctx = make_context()
     result = CompsIngestStage().execute(ctx)
     assert len(result.assumptions) == 1
-    assert "Basis AI" in result.assumptions[0]
+    assert "Modus" in result.assumptions[0]
     assert "SaaS" in result.assumptions[0]
     assert "$10.0M" in result.assumptions[0]
 

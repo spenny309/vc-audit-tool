@@ -8,7 +8,7 @@ from models.exceptions import InsufficientDataError, NoCompsFoundError
 
 
 def make_context(sector=Sector.SAAS):
-    return CompsContext(company_name="Basis AI", sector=sector, revenue_mm=10.0)
+    return CompsContext(company_name="Modus", sector=sector, revenue_mm=10.0)
 
 
 def test_populates_raw_comps_for_known_sector():

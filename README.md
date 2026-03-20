@@ -69,7 +69,7 @@ pytest -v
 Submit a POST request to `http://localhost:5000/api/valuate`:
 ```json
 {
-  "company_name": "Basis AI",
+  "company_name": "Modus",
   "sector": "SaaS",
   "revenue_mm": 10.0
 }
@@ -78,19 +78,19 @@ Submit a POST request to `http://localhost:5000/api/valuate`:
 **Response:**
 ```json
 {
-  "company_name": "Basis AI",
+  "company_name": "Modus",
   "methodology": "Comparable Company Analysis",
   "fair_value_mm": 62.9,
   "mean_revenue_multiple": 6.29,
   "comps_used": [...],
   "assumptions": [
-    "Target company: Basis AI, Sector: SaaS, LTM Revenue: $10.0M",
+    "Target company: Modus, Sector: SaaS, LTM Revenue: $10.0M",
     "Selected 4 SaaS comparables",
     "Mean EV/Revenue multiple of 6.29x across 4 comparables",
     "Mean multiple of 6.29x applied to $10.0M LTM revenue"
   ],
   "citations": ["Mock dataset (Yahoo Finance API in production)"],
-  "explanation": "Basis AI was valued at $62.9M using a mean EV/Revenue multiple of 6.29x applied to $10.0M LTM revenue, derived from 4 SaaS comparables."
+  "explanation": "Modus was valued at $62.9M using a mean EV/Revenue multiple of 6.29x applied to $10.0M LTM revenue, derived from 4 SaaS comparables."
 }
 ```
 

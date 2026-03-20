@@ -29,10 +29,10 @@ def test_fair_value_is_multiple_times_revenue():
 
 
 def test_audit_trail_is_complete():
-    request = ValuationRequest(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    request = ValuationRequest(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     report = CompsModel().run(request)
 
     full_text = " ".join(report.assumptions + report.citations + [report.explanation])
-    assert "Basis AI" in full_text
+    assert "Modus" in full_text
     assert "SaaS" in full_text
     assert "mock" in full_text.lower() or "Mock" in full_text

@@ -3,8 +3,8 @@ from schemas.context import CompsContext
 
 
 def test_comps_context_initializes_with_defaults():
-    ctx = CompsContext(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
-    assert ctx.company_name == "Basis AI"
+    ctx = CompsContext(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
+    assert ctx.company_name == "Modus"
     assert ctx.raw_comps == []
     assert ctx.comps == []
     assert ctx.mean_revenue_multiple is None

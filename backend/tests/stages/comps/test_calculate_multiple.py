@@ -5,7 +5,7 @@ from pipeline.comps.stages.calculate_multiple import CalculateMultipleStage
 
 
 def make_context_with_raw_comps():
-    ctx = CompsContext(company_name="Basis AI", sector=Sector.SAAS, revenue_mm=10.0)
+    ctx = CompsContext(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     ctx.raw_comps = [
         RawCompData(name="A", enterprise_value_mm=100, revenue_mm=10),  # multiple = 10x
         RawCompData(name="B", enterprise_value_mm=200, revenue_mm=10),  # multiple = 20x

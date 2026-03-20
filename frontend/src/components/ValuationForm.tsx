@@ -38,7 +38,7 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
             type="text"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="e.g. Basis AI"
+            placeholder="e.g. Modus"
             required
           />
         </div>
