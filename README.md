@@ -20,10 +20,21 @@ The system identifies comparable public companies by sector, computes the mean E
 ## Setup
 
 **Backend:**
+
+Mac/Linux:
 ```bash
 cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+Windows:
+```powershell
+cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate
 pip install -r requirements.txt
 python app.py
 ```
@@ -39,9 +50,17 @@ Navigate to `http://localhost:5173`.
 
 ## Running Tests
 
+Mac/Linux:
 ```bash
 cd backend
-venv\Scripts\activate   # Windows — activates the virtualenv
+source venv/bin/activate
+pytest -v
+```
+
+Windows:
+```powershell
+cd backend
+venv\Scripts\activate
 pytest -v
 ```
 
