@@ -23,6 +23,12 @@ def test_appends_target_to_assumptions():
     assert "$10.0M" in result.assumptions[0]
 
 
+def test_revenue_formatted_to_one_decimal():
+    ctx = make_context(revenue_mm=15.0)
+    result = CompsIngestStage().execute(ctx)
+    assert "$15.0M" in result.assumptions[0]
+
+
 def test_does_not_modify_other_context_fields():
     ctx = make_context()
     result = CompsIngestStage().execute(ctx)
