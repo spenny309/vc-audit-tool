@@ -1,4 +1,4 @@
-from schemas.request import Sector, ValuationRequest
+from schemas.request import Sector, ValuationRequest, ModelType
 from schemas.report import ValuationReport, CompData
 from models.comps_model import CompsModel
 from pipeline.pipeline import Pipeline
@@ -26,7 +26,7 @@ class MockPipeline(Pipeline[CompsContext]):
 
 def test_model_delegates_to_pipeline():
     model = CompsModel(pipeline=MockPipeline())
-    request = ValuationRequest(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
+    request = ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=10.0)
     report = model.run(request)
     assert report == CANNED_REPORT
 
@@ -39,7 +39,7 @@ def test_model_passes_correct_context_to_pipeline():
             captured["context"] = context
             return CANNED_REPORT
 
-    request = ValuationRequest(company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
+    request = ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=10.0)
     CompsModel(pipeline=CapturingPipeline()).run(request)
 
     ctx = captured["context"]
