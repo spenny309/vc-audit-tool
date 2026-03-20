@@ -4,10 +4,14 @@ from pydantic import ValidationError
 
 from models.comps_model import CompsModel
 from models.exceptions import NoCompsFoundError, InsufficientDataError, CalculationError
+from models.valuation_model import ValuationModel
 from schemas.request import ValuationRequest, Sector
 
 
-def create_app() -> Flask:
+def create_app(model: ValuationModel = None) -> Flask:
+    if model is None:
+        model = CompsModel()
+
     app = Flask(__name__)
     CORS(app)
 
@@ -23,7 +27,7 @@ def create_app() -> Flask:
             return jsonify({"error": "ValidationError", "message": str(e), "status": 400}), 400
 
         try:
-            report = CompsModel().run(valuation_request)
+            report = model.run(valuation_request)
             return jsonify(report.model_dump()), 200
         except (NoCompsFoundError, InsufficientDataError) as e:
             return jsonify({"error": type(e).__name__, "message": str(e), "status": 422}), 422
