@@ -25,19 +25,24 @@ export default function App() {
   }
 
   return (
-    <main style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-      <h1>VC Audit Tool</h1>
-      <p>Estimate the fair value of private portfolio companies using Comparable Company Analysis.</p>
+    <>
+      <header className="app-header">
+        <h1>VC Audit Tool</h1>
+        <span className="header-divider" />
+        <span className="header-tagline">Comparable Company Analysis</span>
+      </header>
 
-      <ValuationForm onSubmit={handleSubmit} isLoading={isLoading} />
+      <main className="app-main">
+        <ValuationForm onSubmit={handleSubmit} isLoading={isLoading} />
 
-      {error && (
-        <div style={{ color: 'red', marginTop: '1rem' }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
+        {error && (
+          <div className="error-banner">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
 
-      {report && <ValuationReport report={report} />}
-    </main>
+        {report && <ValuationReport report={report} />}
+      </main>
+    </>
   );
 }

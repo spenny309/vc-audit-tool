@@ -7,26 +7,36 @@ interface Props {
 export function ValuationReport({ report }: Props) {
   return (
     <div>
-      <h2>{report.company_name} — Valuation Report</h2>
-      <p><strong>Methodology:</strong> {report.methodology}</p>
+      <div className="card">
+        <div className="report-header">
+          <h2 className="report-company">{report.company_name}</h2>
+          <p className="report-methodology">{report.methodology}</p>
+        </div>
 
-      <section>
-        <h3>Fair Value Estimate</h3>
-        <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-          ${report.fair_value_mm.toFixed(1)}M
-        </p>
-        <p>Mean EV/Revenue Multiple: {report.mean_revenue_multiple}x</p>
-      </section>
+        <div className="fair-value-hero">
+          <div className="fair-value-left">
+            <div className="fair-value-label">Fair Value Estimate</div>
+            <div className="fair-value-amount">${report.fair_value_mm.toFixed(1)}M</div>
+          </div>
+          <div className="fair-value-right">
+            <div className="multiple-label">Mean EV / Revenue</div>
+            <div className="multiple-value">{report.mean_revenue_multiple}x</div>
+          </div>
+        </div>
 
-      <section>
-        <h3>Comparable Companies</h3>
-        <table>
+        <p className="card-title">Explanation</p>
+        <p className="explanation-text">{report.explanation}</p>
+      </div>
+
+      <div className="card">
+        <p className="card-title">Comparable Companies</p>
+        <table className="comps-table">
           <thead>
             <tr>
               <th>Company</th>
               <th>Enterprise Value ($M)</th>
               <th>Revenue ($M)</th>
-              <th>EV/Revenue Multiple</th>
+              <th>EV / Revenue</th>
             </tr>
           </thead>
           <tbody>
@@ -40,26 +50,21 @@ export function ValuationReport({ report }: Props) {
             ))}
           </tbody>
         </table>
-      </section>
+      </div>
 
-      <section>
-        <h3>Explanation</h3>
-        <p>{report.explanation}</p>
-      </section>
-
-      <section>
-        <h3>Assumptions</h3>
-        <ul>
+      <div className="card">
+        <p className="card-title">Assumptions</p>
+        <ul className="audit-list">
           {report.assumptions.map((a, i) => <li key={i}>{a}</li>)}
         </ul>
-      </section>
+      </div>
 
-      <section>
-        <h3>Data Sources</h3>
-        <ul>
+      <div className="card">
+        <p className="card-title">Data Sources</p>
+        <ul className="audit-list">
           {report.citations.map((c, i) => <li key={i}>{c}</li>)}
         </ul>
-      </section>
+      </div>
     </div>
   );
 }
