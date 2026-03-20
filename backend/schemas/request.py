@@ -7,6 +7,12 @@ class Sector(str, Enum):
     FINTECH = "FinTech"
     ECOMMERCE = "eCommerce"
     HEALTHTECH = "HealthTech"
+    CYBERSECURITY = "Cybersecurity"
+    MARTECH = "MarTech"
+    EDTECH = "EdTech"
+    CLEANTECH = "CleanTech"
+    PROPTECH = "PropTech"
+    HRTECH = "HRTech"
 
 
 class ValuationRequest(BaseModel):
