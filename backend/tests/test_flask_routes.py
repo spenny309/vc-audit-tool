@@ -77,9 +77,7 @@ def test_get_models_returns_list(client):
     response = client.get("/api/models")
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert isinstance(data, list)
-    assert "Comps" in data
-    assert "DCF" in data
+    assert data == ["Comps", "DCF"]
 
 
 def test_valuate_dcf_returns_report(client):
@@ -148,4 +146,4 @@ def test_create_app_accepts_registry_injection():
             json={"company_name": "Test", "model": "Comps", "sector": "SaaS", "revenue_mm": 10.0},
         )
     assert response.status_code == 200
-    assert mock_model.run.called
+    mock_model.run.assert_called_once()
