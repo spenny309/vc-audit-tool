@@ -18,39 +18,101 @@ export function ValuationReport({ report }: Props) {
             <div className="fair-value-label">Fair Value Estimate</div>
             <div className="fair-value-amount">${report.fair_value_mm.toFixed(1)}M</div>
           </div>
-          <div className="fair-value-right">
-            <div className="multiple-label">Mean EV / Revenue</div>
-            <div className="multiple-value">{report.mean_revenue_multiple}x</div>
-          </div>
+          {report.mean_revenue_multiple !== undefined && (
+            <div className="fair-value-right">
+              <div className="multiple-label">Mean EV / Revenue</div>
+              <div className="multiple-value">{report.mean_revenue_multiple?.toFixed(2)}x</div>
+            </div>
+          )}
         </div>
 
         <p className="card-title">Explanation</p>
         <p className="explanation-text">{report.explanation}</p>
       </div>
 
-      <div className="card">
-        <p className="card-title">Comparable Companies</p>
-        <table className="comps-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Enterprise Value ($M)</th>
-              <th>Revenue ($M)</th>
-              <th>EV / Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.comps_used.map((comp) => (
-              <tr key={comp.name}>
-                <td>{comp.name}</td>
-                <td>{comp.enterprise_value_mm.toLocaleString()}</td>
-                <td>{comp.revenue_mm.toLocaleString()}</td>
-                <td>{comp.revenue_multiple}x</td>
+      {report.comps_used && (
+        <div className="card">
+          <p className="card-title">Comparable Companies</p>
+          <table className="comps-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Enterprise Value ($M)</th>
+                <th>Revenue ($M)</th>
+                <th>EV / Revenue</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {report.comps_used.map((comp) => (
+                <tr key={comp.name}>
+                  <td>{comp.name}</td>
+                  <td>{comp.enterprise_value_mm.toLocaleString()}</td>
+                  <td>{comp.revenue_mm.toLocaleString()}</td>
+                  <td>{comp.revenue_multiple}x</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {report.dcf_cashflows && (
+        <>
+          <div className="card">
+            <p className="card-title">Key Inputs</p>
+            <table className="comps-table">
+              <tbody>
+                <tr>
+                  <td>EBITDA Margin</td>
+                  <td>{((report.ebitda_margin_pct ?? 0) * 100).toFixed(1)}%</td>
+                </tr>
+                <tr>
+                  <td>Discount Rate (WACC)</td>
+                  <td>{((report.discount_rate ?? 0) * 100).toFixed(1)}%</td>
+                </tr>
+                <tr>
+                  <td>Terminal Growth Rate</td>
+                  <td>{((report.terminal_growth_rate ?? 0) * 100).toFixed(1)}%</td>
+                </tr>
+                <tr>
+                  <td>Discounted Terminal Value</td>
+                  <td>${(report.terminal_value_mm ?? 0).toFixed(2)}M</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="card">
+            <p className="card-title">Projected Cash Flows</p>
+            <table className="comps-table">
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th>Revenue ($M)</th>
+                  <th>FCF ($M)</th>
+                  <th>Discounted FCF ($M)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.dcf_cashflows.map((cf) => (
+                  <tr key={cf.year}>
+                    <td>Year {cf.year}</td>
+                    <td>{cf.revenue_mm.toFixed(1)}</td>
+                    <td>{cf.fcf_mm.toFixed(2)}</td>
+                    <td>{cf.discounted_fcf_mm.toFixed(2)}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td><strong>Terminal Value</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td><strong>{(report.terminal_value_mm ?? 0).toFixed(2)}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       <div className="card">
         <p className="card-title">Assumptions</p>
