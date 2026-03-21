@@ -1,8 +1,4 @@
-export interface ValuationRequest {
-  company_name: string;
-  sector: string;
-  revenue_mm: number;
-}
+export type ModelType = "Comps" | "DCF";
 
 export interface CompData {
   name: string;
@@ -11,21 +7,54 @@ export interface CompData {
   revenue_multiple: number;
 }
 
+export interface DcfYearData {
+  year: number;
+  revenue_mm: number;
+  fcf_mm: number;
+  discounted_fcf_mm: number;
+}
+
+export interface ValuationRequest {
+  company_name: string;
+  model: ModelType;
+  // Comps
+  sector?: string;
+  revenue_mm?: number;
+  // DCF
+  projections?: number[];
+  ebitda_margin_pct?: number;
+  discount_rate?: number;
+  terminal_growth_rate?: number;
+}
+
 export interface ValuationReport {
   company_name: string;
   methodology: string;
   fair_value_mm: number;
-  mean_revenue_multiple: number;
-  comps_used: CompData[];
   assumptions: string[];
   citations: string[];
   explanation: string;
+  // Comps-specific
+  mean_revenue_multiple?: number;
+  comps_used?: CompData[];
+  // DCF-specific
+  dcf_cashflows?: DcfYearData[];
+  terminal_value_mm?: number;
+  ebitda_margin_pct?: number;
+  discount_rate?: number;
+  terminal_growth_rate?: number;
 }
 
 export interface ApiError {
   error: string;
   message: string;
   status: number;
+}
+
+export async function getModels(): Promise<string[]> {
+  const response = await fetch('/api/models');
+  if (!response.ok) throw new Error('Failed to fetch models');
+  return response.json();
 }
 
 export async function getSectors(): Promise<string[]> {
