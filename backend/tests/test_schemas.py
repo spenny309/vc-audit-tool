@@ -68,7 +68,7 @@ def test_dcf_wrong_projection_count_rejected():
 
 
 def test_dcf_negative_projection_rejected():
-    with pytest.raises(ValidationError, match="greater than 0"):
+    with pytest.raises(ValidationError, match="all projection values must be greater than 0"):
         ValuationRequest(
             company_name="X", model=ModelType.DCF,
             projections=[10.0, -1.0, 12.0, 13.0, 14.0],
