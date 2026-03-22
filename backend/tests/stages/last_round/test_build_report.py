@@ -45,6 +45,7 @@ def test_explanation_contains_key_info():
     assert "100.0" in explanation  # original valuation
     assert "2020-03-31" in explanation  # round date
     assert "Nasdaq Composite" in explanation  # index name
+    assert "+140.3%" in explanation  # adjustment pct
 
 
 def test_assumptions_and_citations_passed_through():
