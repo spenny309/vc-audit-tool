@@ -59,7 +59,7 @@ def test_assumption_text_negative_move():
     ctx = _make_context(index_at_round=12000.0, index_today=10800.0, valuation_mm=50.0)
     result = LastRoundApplyAdjustmentStage().execute(ctx)
     assert "-10.0%" in result.assumptions[0]
-    assert "$50.0M" in result.assumptions[0]
+    assert "$50.00M" in result.assumptions[0]
 
 
 def test_index_pct_change_is_set():

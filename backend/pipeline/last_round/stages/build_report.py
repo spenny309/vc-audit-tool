@@ -8,9 +8,9 @@ class LastRoundBuildReportStage(Stage[LastRoundContext]):
         index_name = context.index.value
         pct = context.index_pct_change * 100
         explanation = (
-            f"{context.company_name} was valued at ${context.fair_value_mm:.1f}M, "
+            f"{context.company_name} was valued at ${context.fair_value_mm:.2f}M, "
             f"starting from a last post-money valuation of "
-            f"${context.last_post_money_valuation_mm:.1f}M "
+            f"${context.last_post_money_valuation_mm:.2f}M "
             f"(round date: {context.last_round_date}) "
             f"and adjusting by {pct:+.1f}% to reflect {index_name} performance over that period."
         )

@@ -9,6 +9,6 @@ class ApplyMultipleStage(Stage[CompsContext]):
         )
         context.assumptions.append(
             f"Mean multiple of {context.mean_revenue_multiple}x "
-            f"applied to ${context.revenue_mm:.1f}M LTM revenue"
+            f"applied to ${context.revenue_mm:.2f}M LTM revenue"
         )
         return context

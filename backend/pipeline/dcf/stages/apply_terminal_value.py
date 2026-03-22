@@ -14,7 +14,7 @@ class DcfApplyTerminalValueStage(Stage[DcfContext]):
         tv = context.terminal_value_mm
         g_pct = g * 100
         context.assumptions.append(
-            f"Discounted terminal value of ${tv:.1f}M calculated using Gordon Growth Model "
+            f"Discounted terminal value of ${tv:.2f}M calculated using Gordon Growth Model "
             f"at {g_pct:.1f}% perpetual growth rate"
         )
         return context

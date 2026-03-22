@@ -20,6 +20,6 @@ class LastRoundApplyAdjustmentStage(Stage[LastRoundContext]):
         index_name = context.index.value
         context.assumptions.append(
             f"{index_name} moved {index_pct_change * 100:+.1f}% from round date to today; "
-            f"applied to last post-money valuation of ${context.last_post_money_valuation_mm:.1f}M"
+            f"applied to last post-money valuation of ${context.last_post_money_valuation_mm:.2f}M"
         )
         return context

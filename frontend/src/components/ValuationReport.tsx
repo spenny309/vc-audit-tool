@@ -16,7 +16,7 @@ export function ValuationReport({ report }: Props) {
         <div className="fair-value-hero">
           <div className="fair-value-left">
             <div className="fair-value-label">Fair Value Estimate</div>
-            <div className="fair-value-amount">${report.fair_value_mm.toFixed(1)}M</div>
+            <div className="fair-value-amount">${report.fair_value_mm.toFixed(2)}M</div>
           </div>
           {report.mean_revenue_multiple !== undefined && (
             <div className="fair-value-right">
@@ -97,7 +97,7 @@ export function ValuationReport({ report }: Props) {
                 {report.dcf_cashflows.map((cf) => (
                   <tr key={cf.year}>
                     <td>Year {cf.year}</td>
-                    <td>{cf.revenue_mm.toFixed(1)}</td>
+                    <td>{cf.revenue_mm.toFixed(2)}</td>
                     <td>{cf.fcf_mm.toFixed(2)}</td>
                     <td>{cf.discounted_fcf_mm.toFixed(2)}</td>
                   </tr>
@@ -121,7 +121,7 @@ export function ValuationReport({ report }: Props) {
             <tbody>
               <tr>
                 <td>Last Post-Money Valuation</td>
-                <td>${report.last_post_money_valuation_mm?.toFixed(1)}M</td>
+                <td>${report.last_post_money_valuation_mm?.toFixed(2)}M</td>
               </tr>
               <tr>
                 <td>Date of Last Round</td>

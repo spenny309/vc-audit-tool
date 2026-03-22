@@ -41,8 +41,8 @@ def test_explanation_contains_key_info():
     result = LastRoundBuildReportStage().execute(ctx)
     explanation = result.report.explanation
     assert "Acme Corp" in explanation
-    assert "240.3" in explanation  # fair value
-    assert "100.0" in explanation  # original valuation
+    assert "240.26" in explanation  # fair value
+    assert "100.00" in explanation  # original valuation
     assert "2020-03-31" in explanation  # round date
     assert "Nasdaq Composite" in explanation  # index name
     assert "+140.3%" in explanation  # adjustment pct

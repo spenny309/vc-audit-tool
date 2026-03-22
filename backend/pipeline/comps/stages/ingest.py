@@ -8,6 +8,6 @@ class CompsIngestStage(Stage[CompsContext]):
         context.assumptions.append(
             f"Target company: {context.company_name}, "
             f"Sector: {context.sector.value}, "
-            f"LTM Revenue: ${context.revenue_mm:.1f}M"
+            f"LTM Revenue: ${context.revenue_mm:.2f}M"
         )
         return context

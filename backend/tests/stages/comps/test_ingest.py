@@ -20,13 +20,13 @@ def test_appends_target_to_assumptions():
     assert len(result.assumptions) == 1
     assert "Modus" in result.assumptions[0]
     assert "SaaS" in result.assumptions[0]
-    assert "$10.0M" in result.assumptions[0]
+    assert "$10.00M" in result.assumptions[0]
 
 
-def test_revenue_formatted_to_one_decimal():
+def test_revenue_formatted_to_two_decimals():
     ctx = make_context(revenue_mm=15.0)
     result = CompsIngestStage().execute(ctx)
-    assert "$15.0M" in result.assumptions[0]
+    assert "$15.00M" in result.assumptions[0]
 
 
 def test_does_not_modify_other_context_fields():
