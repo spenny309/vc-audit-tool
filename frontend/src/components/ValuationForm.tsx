@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSectors, getModels } from '../api/client';
+import { getSectors, getModels, getIndices } from '../api/client';
 import type { ValuationRequest, ModelType } from '../api/client';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 export function ValuationForm({ onSubmit, isLoading }: Props) {
   const [models, setModels] = useState<string[]>([]);
   const [sectors, setSectors] = useState<string[]>([]);
+  const [indices, setIndices] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState<ModelType>('Comps');
   const [companyName, setCompanyName] = useState('');
 
@@ -27,9 +28,15 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
   const [discountRate, setDiscountRate] = useState('');
   const [terminalGrowthRate, setTerminalGrowthRate] = useState('');
 
+  // Last Round fields
+  const [lastPostMoneyValuationMm, setLastPostMoneyValuationMm] = useState('');
+  const [lastRoundDate, setLastRoundDate] = useState('');
+  const [index, setIndex] = useState('');
+
   useEffect(() => {
     getSectors().then(setSectors).catch(console.error);
     getModels().then(setModels).catch(console.error);
+    getIndices().then(setIndices).catch(console.error);
   }, []);
 
   function handleModelChange(model: ModelType) {
@@ -39,6 +46,9 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
     setRevenueMm('');
     setYear1(''); setYear2(''); setYear3(''); setYear4(''); setYear5('');
     setEbitdaMarginPct(''); setDiscountRate(''); setTerminalGrowthRate('');
+    setLastPostMoneyValuationMm('');
+    setLastRoundDate('');
+    setIndex('');
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -50,7 +60,7 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
         sector,
         revenue_mm: parseFloat(revenueMm),
       });
-    } else {
+    } else if (selectedModel === 'DCF') {
       onSubmit({
         company_name: companyName,
         model: 'DCF',
@@ -64,6 +74,14 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
         ebitda_margin_pct: parseFloat(ebitdaMarginPct) / 100,
         discount_rate: parseFloat(discountRate) / 100,
         terminal_growth_rate: parseFloat(terminalGrowthRate) / 100,
+      });
+    } else {
+      onSubmit({
+        company_name: companyName,
+        model: 'Last Round',
+        last_post_money_valuation_mm: parseFloat(lastPostMoneyValuationMm),
+        last_round_date: lastRoundDate,
+        index: index || undefined,
       });
     }
   }
@@ -205,6 +223,53 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
                 step="0.01"
                 required
               />
+            </div>
+          </>
+        )}
+
+        {selectedModel === 'Last Round' && (
+          <>
+            <div className="form-group">
+              <label className="form-label" htmlFor="last-post-money">Last Post-Money Valuation ($M)</label>
+              <input
+                id="last-post-money"
+                className="form-input"
+                type="number"
+                value={lastPostMoneyValuationMm}
+                onChange={(e) => setLastPostMoneyValuationMm(e.target.value)}
+                placeholder="e.g. 50"
+                min="0.01"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="last-round-date">Date of Last Round</label>
+              <input
+                id="last-round-date"
+                className="form-input"
+                type="date"
+                value={lastRoundDate}
+                onChange={(e) => setLastRoundDate(e.target.value)}
+                min="2015-01-01"
+                max={new Date().toISOString().split('T')[0]}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="index">Market Index</label>
+              <select
+                id="index"
+                className="form-select"
+                value={index}
+                onChange={(e) => setIndex(e.target.value)}
+              >
+                {indices.map((i) => (
+                  <option key={i} value={i}>{i}</option>
+                ))}
+              </select>
             </div>
           </>
         )}
