@@ -4,14 +4,16 @@ from pydantic import ValidationError
 
 from models.comps_model import CompsModel
 from models.dcf_model import DcfModel
+from models.last_round_model import LastRoundModel
 from models.exceptions import NoCompsFoundError, InsufficientDataError, CalculationError
 from models.valuation_model import ValuationModel
-from schemas.request import ValuationRequest, Sector, ModelType
+from schemas.request import ValuationRequest, Sector, ModelType, IndexType
 
 # Production default registry — one instance per model type
 MODEL_REGISTRY: dict[ModelType, ValuationModel] = {
     ModelType.COMPS: CompsModel(),
     ModelType.DCF: DcfModel(),
+    ModelType.LAST_ROUND: LastRoundModel(),
 }
 
 
@@ -29,6 +31,10 @@ def create_app(registry: dict[ModelType, ValuationModel] = None) -> Flask:
     @app.route("/api/sectors", methods=["GET"])
     def get_sectors():
         return jsonify([s.value for s in Sector])
+
+    @app.route("/api/indices", methods=["GET"])
+    def get_indices():
+        return jsonify([i.value for i in IndexType])
 
     @app.route("/api/valuate", methods=["POST"])
     def valuate():
