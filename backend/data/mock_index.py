@@ -87,20 +87,5 @@ INDEX_VALUE_TODAY: dict[IndexType, float] = {
 
 def get_index_at_date(index: IndexType, d: date) -> float:
     closes = INDEX_QUARTERLY_CLOSES[index]
-    sorted_dates = sorted(closes)
-    # Find the two surrounding dates
-    later_idx = next(
-        (i for i, k in enumerate(sorted_dates) if k >= d),
-        len(sorted_dates) - 1,
-    )
-    if later_idx == 0:
-        return closes[sorted_dates[0]]
-    earlier_idx = later_idx - 1
-    earlier = sorted_dates[earlier_idx]
-    later = sorted_dates[later_idx]
-    earlier_dist = (d - earlier).days
-    later_dist = (later - d).days
-    # Prefer the later date when it is within 1 day of being equally close (rounds toward later on near-ties)
-    if later_dist <= earlier_dist + 1:
-        return closes[later]
-    return closes[earlier]
+    nearest = min(closes, key=lambda k: abs(k - d))
+    return closes[nearest]

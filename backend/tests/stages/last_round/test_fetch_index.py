@@ -45,8 +45,8 @@ def test_exact_date_match_russell():
 
 
 def test_nearest_date_between_entries():
-    # 2020-05-15 is closer to 2020-06-30 than to 2020-03-31
-    result = get_index_at_date(IndexType.NASDAQ, date(2020, 5, 15))
+    # 2020-06-15 is much closer to 2020-06-30 than to 2020-03-31
+    result = get_index_at_date(IndexType.NASDAQ, date(2020, 6, 15))
     assert result == 10058.77  # 2020-06-30 entry
 
 
