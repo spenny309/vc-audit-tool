@@ -46,6 +46,9 @@ def create_app(registry: dict[ModelType, ValuationModel] = None) -> Flask:
             return jsonify({"error": "ValidationError", "message": str(e), "status": 400}), 400
 
         try:
+            # valuation_request.model is a Literal string whose value matches
+            # the corresponding ModelType enum value exactly (e.g. "Comps" == ModelType.COMPS.value),
+            # so this construction is safe and not a fragile re-parse.
             model_key = ModelType(valuation_request.model)
             report = registry[model_key].run(valuation_request)
             return jsonify(report.model_dump()), 200

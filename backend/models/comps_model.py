@@ -6,7 +6,7 @@ from schemas.report import ValuationReport
 from schemas.request import CompsRequest
 
 
-class CompsModel(ValuationModel):
+class CompsModel(ValuationModel[CompsRequest]):
     def __init__(self, pipeline: Pipeline[CompsContext] | None = None) -> None:
         self._pipeline = pipeline or CompsPipeline()
 

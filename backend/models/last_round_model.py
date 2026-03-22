@@ -6,7 +6,7 @@ from schemas.report import ValuationReport
 from schemas.request import LastRoundRequest
 
 
-class LastRoundModel(ValuationModel):
+class LastRoundModel(ValuationModel[LastRoundRequest]):
     def __init__(self, pipeline: Pipeline[LastRoundContext] | None = None) -> None:
         self._pipeline = pipeline or LastRoundPipeline()
 

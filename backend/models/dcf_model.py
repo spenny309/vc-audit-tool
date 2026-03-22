@@ -6,7 +6,7 @@ from schemas.report import ValuationReport
 from schemas.request import DcfRequest
 
 
-class DcfModel(ValuationModel):
+class DcfModel(ValuationModel[DcfRequest]):
     def __init__(self, pipeline: Pipeline[DcfContext] | None = None) -> None:
         self._pipeline = pipeline or DcfPipeline()
 
