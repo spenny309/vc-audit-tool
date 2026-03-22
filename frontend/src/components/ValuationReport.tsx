@@ -18,7 +18,7 @@ export function ValuationReport({ report }: Props) {
             <div className="fair-value-label">Fair Value Estimate</div>
             <div className="fair-value-amount">${report.fair_value_mm.toFixed(2)}M</div>
           </div>
-          {report.mean_revenue_multiple !== undefined && (
+          {report.mean_revenue_multiple != null && (
             <div className="fair-value-right">
               <div className="multiple-label">Mean EV / Revenue</div>
               <div className="multiple-value">{report.mean_revenue_multiple?.toFixed(2)}x</div>
