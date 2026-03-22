@@ -81,20 +81,25 @@ New validation branch in `model_validator` for `ModelType.LAST_ROUND`:
 
 ### Context (`schemas/last_round_context.py`)
 
+`last_round_date` is kept as a `str` on the context (matching the request type). `IngestStage` parses it and populates `last_round_date_parsed` (`datetime.date`). All downstream stages read from `last_round_date_parsed`.
+
 ```python
 @dataclass
 class LastRoundContext:
-    # Set at construction
+    # Set at construction (from ValuationRequest)
     company_name: str
     last_post_money_valuation_mm: float
-    last_round_date: date              # parsed from string by IngestStage
+    last_round_date: str                          # ISO string: "YYYY-MM-DD"
+
+    # Set by IngestStage
+    last_round_date_parsed: Optional[date] = None # parsed datetime.date
 
     # Set by FetchIndexStage
     index_value_at_round: Optional[float] = None
     index_value_today: Optional[float] = None
 
     # Set by ApplyAdjustmentStage
-    index_pct_change: Optional[float] = None   # e.g. 0.142 = +14.2%
+    index_pct_change: Optional[float] = None      # e.g. 0.142 = +14.2%
     fair_value_mm: Optional[float] = None
 
     # Set by BuildReportStage
@@ -129,7 +134,11 @@ def get_nasdaq_at_date(d: date) -> float:
     return NASDAQ_QUARTERLY_CLOSES[nearest]
 ```
 
-The "today" value is the most recent entry in the table (2026-Q1).
+The "today" value is a module-level constant derived from the most recent table entry, not from `date.today()`. This ensures deterministic behaviour and makes tests assertable against known values:
+```python
+INDEX_DATE_TODAY: date = max(NASDAQ_QUARTERLY_CLOSES)
+INDEX_VALUE_TODAY: float = NASDAQ_QUARTERLY_CLOSES[INDEX_DATE_TODAY]
+```
 
 ---
 
@@ -150,23 +159,24 @@ Follows the same pattern as `DcfPipeline`: iterates stages, re-raises `Valuation
 
 **`LastRoundIngestStage`**
 - Strip/normalize `company_name`
-- Parse `last_round_date` string → `datetime.date`, store on context
-- Append assumption: `"Target company: {name}, Last Round (Market-Adjusted) valuation as of {date}"`
+- Parse `context.last_round_date` (str) → `datetime.date`, store as `context.last_round_date_parsed`
+- Append assumption: `"Target company: {name}, Last Round (Market-Adjusted) valuation as of {round_date}"` where `{round_date}` is `last_round_date_parsed`
 
 **`LastRoundFetchIndexStage`**
-- Call `get_nasdaq_at_date(context.last_round_date)` → set `context.index_value_at_round`
-- Call `get_nasdaq_at_date(date.today())` → set `context.index_value_today`
+- Call `get_nasdaq_at_date(context.last_round_date_parsed)` → set `context.index_value_at_round`
+- Set `context.index_value_today = INDEX_VALUE_TODAY` (the module-level constant — not `date.today()`)
 - Append citation: `"Nasdaq Composite index data: mock historical quarterly close prices (source: mocked for audit demo)"`
 - Append assumption: `"Index at round date ({date}): {value:.2f} (nearest quarterly close)"`
 
 **`LastRoundApplyAdjustmentStage`**
+- Guard first: if `context.index_value_at_round == 0`, raise `CalculationError("Index value at round date is zero; cannot compute adjustment")`
 - Calculate `index_pct_change = (index_today - index_at_round) / index_at_round`
 - Calculate `fair_value_mm = round(last_post_money_valuation_mm * (1 + index_pct_change), 2)`
-- Guard: if `index_at_round == 0`, raise `CalculationError("Index value at round date is zero; cannot compute adjustment")`
 - Append assumption: `"Nasdaq moved {pct:+.1f}% from round date to today; applied to last post-money valuation of ${val:.1f}M"`
 
 **`LastRoundBuildReportStage`**
 - Construct `ValuationReport` with all common fields + all Last Round optional fields
+- `report.last_round_date` is set from `context.last_round_date` (the original request string)
 - Explanation: `"{name} was valued at ${fair:.1f}M, starting from a last post-money valuation of ${orig:.1f}M (round date: {date}) and adjusting by {pct:+.1f}% to reflect Nasdaq Composite performance over that period."`
 
 ### `LastRoundModel`
@@ -180,7 +190,7 @@ class LastRoundModel(ValuationModel):
         context = LastRoundContext(
             company_name=request.company_name,
             last_post_money_valuation_mm=request.last_post_money_valuation_mm,
-            last_round_date=request.last_round_date,  # string; IngestStage parses it
+            last_round_date=request.last_round_date,
         )
         return self._pipeline.execute(context)
 ```
@@ -209,7 +219,7 @@ MODEL_REGISTRY: dict[ModelType, ValuationModel] = {
 | Date in the future | `model_validator` → `ValueError` | 400 |
 | Date before 2015-01-01 | `model_validator` → `ValueError` | 400 |
 | `last_post_money_valuation_mm` ≤ 0 | `model_validator` → `ValueError` | 400 |
-| `index_at_round == 0` (division by zero) | `ApplyAdjustmentStage` → `CalculationError` | 500 |
+| `index_at_round == 0` (division by zero) | `ApplyAdjustmentStage` → `CalculationError` (guard runs before division) | 500 |
 | Unexpected pipeline failure | `LastRoundPipeline.execute()` → `CalculationError` | 500 |
 
 ---
@@ -244,7 +254,7 @@ New field section rendered when `selectedModel === 'Last Round'`:
 
 ### `ValuationReport.tsx`
 
-New conditional block rendered when `report.last_round_date` is present:
+New conditional block rendered when `report.index_pct_change !== undefined` (numeric guard; avoids empty-string falsiness of a string field):
 
 **"Market Adjustment" card** — table with:
 | Row | Value |
@@ -263,20 +273,20 @@ New conditional block rendered when `report.last_round_date` is present:
 
 **`test_ingest.py`**
 - Company name is stripped of whitespace
-- `last_round_date` string is parsed to `datetime.date` on context
+- `last_round_date_parsed` is set to the correct `datetime.date` on context
 - Assumption text is appended
 
 **`test_fetch_index.py`**
-- Exact date match returns correct value
-- Date between two entries returns nearest
-- Sets both `index_value_at_round` and `index_value_today`
+- Exact date match returns correct value for `index_value_at_round`
+- Date between two entries returns nearest for `index_value_at_round`
+- `index_value_today` equals `INDEX_VALUE_TODAY` constant (deterministic, no `date.today()` call)
 - Citation is appended
 
 **`test_apply_adjustment.py`**
 - Positive market move: `fair_value_mm > last_post_money_valuation_mm`
 - Negative market move: `fair_value_mm < last_post_money_valuation_mm`
-- Zero market move: `fair_value_mm == last_post_money_valuation_mm`
-- `index_at_round == 0` raises `CalculationError`
+- Zero market move (`index_at_round == index_today`): `fair_value_mm == last_post_money_valuation_mm`
+- `index_at_round == 0` raises `CalculationError` before any division occurs
 - Assumption text appended with correct sign
 
 **`test_build_report.py`**
@@ -285,10 +295,12 @@ New conditional block rendered when `report.last_round_date` is present:
 
 ### Model-level tests (`test_last_round_model.py`)
 - `run()` returns a `ValuationReport`
+- `run()` passes correct field values to pipeline (asserts `company_name`, `last_post_money_valuation_mm`, `last_round_date` arrive on context as expected)
+- Default pipeline is an instance of `LastRoundPipeline`
 - Pipeline is injectable (test with mock pipeline)
 
 ### Integration tests (`test_last_round_integration.py`)
-- `POST /api/valuate` with valid Last Round payload → 200, correct report shape
+- `POST /api/valuate` with valid Last Round payload → 200, exact `fair_value_mm` asserted (pick a round date whose nearest quarterly close is known, compute expected value by hand)
 - Missing `last_post_money_valuation_mm` → 400
 - Missing `last_round_date` → 400
 - Future `last_round_date` → 400
