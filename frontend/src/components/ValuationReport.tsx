@@ -114,7 +114,7 @@ export function ValuationReport({ report }: Props) {
         </>
       )}
 
-      {report.index_pct_change !== undefined && (
+      {report.index_pct_change != null && (
         <div className="card">
           <p className="card-title">Market Adjustment</p>
           <table className="comps-table">
