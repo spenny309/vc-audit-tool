@@ -5,7 +5,7 @@ from schemas.comps_context import CompsContext
 from schemas.report import RawCompData
 
 
-class SelectCompsStage(Stage[CompsContext]):
+class CompsSelectStage(Stage[CompsContext]):
     def execute(self, context: CompsContext) -> CompsContext:
         raw = mock_comps.MOCK_COMPS.get(context.sector)
 

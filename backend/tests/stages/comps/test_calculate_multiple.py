@@ -1,7 +1,7 @@
 from schemas.request import Sector
 from schemas.comps_context import CompsContext
 from schemas.report import RawCompData
-from pipeline.comps.stages.calculate_multiple import CalculateMultipleStage
+from pipeline.comps.stages.calculate_multiple import CompsCalculateMultipleStage
 
 
 def make_context_with_raw_comps():
@@ -15,18 +15,18 @@ def make_context_with_raw_comps():
 
 
 def test_computes_revenue_multiple_per_comp():
-    result = CalculateMultipleStage().execute(make_context_with_raw_comps())
+    result = CompsCalculateMultipleStage().execute(make_context_with_raw_comps())
     multiples = [c.revenue_multiple for c in result.comps]
     assert multiples == [10.0, 20.0, 30.0]
 
 
 def test_computes_mean_revenue_multiple():
-    result = CalculateMultipleStage().execute(make_context_with_raw_comps())
+    result = CompsCalculateMultipleStage().execute(make_context_with_raw_comps())
     assert result.mean_revenue_multiple == 20.0  # (10 + 20 + 30) / 3
 
 
 def test_populates_comps_with_all_fields():
-    result = CalculateMultipleStage().execute(make_context_with_raw_comps())
+    result = CompsCalculateMultipleStage().execute(make_context_with_raw_comps())
     assert len(result.comps) == 3
     for comp in result.comps:
         assert comp.name
@@ -36,6 +36,6 @@ def test_populates_comps_with_all_fields():
 
 
 def test_appends_assumption():
-    result = CalculateMultipleStage().execute(make_context_with_raw_comps())
+    result = CompsCalculateMultipleStage().execute(make_context_with_raw_comps())
     assert any("Mean EV/Revenue multiple" in a for a in result.assumptions)
     assert any("20.0x" in a for a in result.assumptions)

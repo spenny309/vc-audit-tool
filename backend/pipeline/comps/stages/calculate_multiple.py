@@ -4,7 +4,7 @@ from schemas.comps_context import CompsContext
 from schemas.report import CompData
 
 
-class CalculateMultipleStage(Stage[CompsContext]):
+class CompsCalculateMultipleStage(Stage[CompsContext]):
     def execute(self, context: CompsContext) -> CompsContext:
         comps = []
         for raw in context.raw_comps:
