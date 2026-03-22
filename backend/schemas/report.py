@@ -41,3 +41,11 @@ class ValuationReport(BaseModel):
     ebitda_margin_pct: Optional[float] = None
     discount_rate: Optional[float] = None
     terminal_growth_rate: Optional[float] = None
+
+    # Last Round-specific — None for Comps and DCF reports
+    last_post_money_valuation_mm: Optional[float] = None
+    last_round_date: Optional[str] = None
+    index_name: Optional[str] = None
+    index_value_at_round: Optional[float] = None
+    index_value_today: Optional[float] = None
+    index_pct_change: Optional[float] = None
