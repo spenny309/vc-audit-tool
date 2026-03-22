@@ -3,7 +3,7 @@ from schemas.comps_context import CompsContext
 from schemas.report import ValuationReport
 
 
-class BuildReportStage(Stage[CompsContext]):
+class CompsBuildReportStage(Stage[CompsContext]):
     def execute(self, context: CompsContext) -> CompsContext:
         explanation = (
             f"{context.company_name} was valued at ${context.fair_value_mm}M "

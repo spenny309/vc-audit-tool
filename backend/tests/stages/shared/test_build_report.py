@@ -1,7 +1,7 @@
 from schemas.request import Sector
 from schemas.comps_context import CompsContext
 from schemas.report import CompData
-from pipeline.shared.stages.build_report import BuildReportStage
+from pipeline.comps.stages.build_report import CompsBuildReportStage
 
 
 def make_fully_enriched_context():
@@ -19,13 +19,13 @@ def make_fully_enriched_context():
 
 def test_populates_report_on_context():
     ctx = make_fully_enriched_context()
-    result = BuildReportStage().execute(ctx)
+    result = CompsBuildReportStage().execute(ctx)
     assert result.report is not None
 
 
 def test_report_has_all_required_fields():
     ctx = make_fully_enriched_context()
-    result = BuildReportStage().execute(ctx)
+    result = CompsBuildReportStage().execute(ctx)
     report = result.report
     assert report.company_name == "Modus"
     assert report.methodology == "Comparable Company Analysis"
@@ -38,7 +38,7 @@ def test_report_has_all_required_fields():
 
 def test_explanation_contains_key_values():
     ctx = make_fully_enriched_context()
-    result = BuildReportStage().execute(ctx)
+    result = CompsBuildReportStage().execute(ctx)
     explanation = result.report.explanation
     assert "Modus" in explanation
     assert "71.9" in explanation
