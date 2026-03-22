@@ -1,4 +1,4 @@
-export type ModelType = "Comps" | "DCF";
+export type ModelType = "Comps" | "DCF" | "Last Round";
 
 export interface CompData {
   name: string;
@@ -25,6 +25,10 @@ export interface ValuationRequest {
   ebitda_margin_pct?: number;
   discount_rate?: number;
   terminal_growth_rate?: number;
+  // Last Round
+  last_post_money_valuation_mm?: number;
+  last_round_date?: string;   // "YYYY-MM-DD"
+  index?: string;             // IndexType value, e.g. "Nasdaq Composite"
 }
 
 export interface ValuationReport {
@@ -43,6 +47,13 @@ export interface ValuationReport {
   ebitda_margin_pct?: number;
   discount_rate?: number;
   terminal_growth_rate?: number;
+  // Last Round-specific
+  last_post_money_valuation_mm?: number;
+  last_round_date?: string;
+  index_name?: string;
+  index_value_at_round?: number;
+  index_value_today?: number;
+  index_pct_change?: number;
 }
 
 export interface ApiError {
@@ -54,6 +65,12 @@ export interface ApiError {
 export async function getModels(): Promise<string[]> {
   const response = await fetch('/api/models');
   if (!response.ok) throw new Error('Failed to fetch models');
+  return response.json();
+}
+
+export async function getIndices(): Promise<string[]> {
+  const response = await fetch('/api/indices');
+  if (!response.ok) throw new Error('Failed to fetch indices');
   return response.json();
 }
 
