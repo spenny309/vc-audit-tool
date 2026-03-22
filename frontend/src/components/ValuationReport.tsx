@@ -121,7 +121,7 @@ export function ValuationReport({ report }: Props) {
             <tbody>
               <tr>
                 <td>Last Post-Money Valuation</td>
-                <td>${report.last_post_money_valuation_mm}M</td>
+                <td>${report.last_post_money_valuation_mm?.toFixed(1)}M</td>
               </tr>
               <tr>
                 <td>Date of Last Round</td>
