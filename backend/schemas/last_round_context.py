@@ -1,10 +1,12 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from schemas.report import ValuationReport
 from schemas.request import IndexType
+
+if TYPE_CHECKING:
+    from schemas.report import ValuationReport
 
 
 @dataclass
