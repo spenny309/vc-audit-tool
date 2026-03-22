@@ -1,5 +1,5 @@
 from schemas.request import Sector
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 
 
 def test_comps_context_initializes_with_defaults():

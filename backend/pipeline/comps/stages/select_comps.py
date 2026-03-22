@@ -1,7 +1,7 @@
 import data.mock_comps as mock_comps
 from models.exceptions import NoCompsFoundError, InsufficientDataError
 from pipeline.stage import Stage
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import RawCompData
 
 

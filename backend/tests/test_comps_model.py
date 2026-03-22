@@ -2,7 +2,7 @@ from schemas.request import Sector, ValuationRequest, ModelType
 from schemas.report import ValuationReport, CompData
 from models.comps_model import CompsModel
 from pipeline.pipeline import Pipeline
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 
 
 CANNED_REPORT = ValuationReport(

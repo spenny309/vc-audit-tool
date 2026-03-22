@@ -5,7 +5,7 @@ from pipeline.comps.stages.select_comps import SelectCompsStage
 from pipeline.comps.stages.calculate_multiple import CalculateMultipleStage
 from pipeline.comps.stages.apply_multiple import ApplyMultipleStage
 from pipeline.shared.stages.build_report import BuildReportStage
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import ValuationReport
 
 

@@ -1,7 +1,7 @@
 from pipeline.comps.comps_pipeline import CompsPipeline
 from pipeline.pipeline import Pipeline
 from models.valuation_model import ValuationModel
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import ValuationReport
 from schemas.request import ValuationRequest
 

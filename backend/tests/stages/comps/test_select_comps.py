@@ -1,7 +1,7 @@
 import pytest
 import data.mock_comps as mock_comps_module
 from schemas.request import Sector
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import RawCompData
 from pipeline.comps.stages.select_comps import SelectCompsStage
 from models.exceptions import InsufficientDataError, NoCompsFoundError

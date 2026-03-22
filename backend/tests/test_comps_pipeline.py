@@ -1,6 +1,6 @@
 import pytest
 from schemas.request import Sector
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from pipeline.comps.comps_pipeline import CompsPipeline
 from models.exceptions import ValuationError
 

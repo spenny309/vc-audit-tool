@@ -1,5 +1,5 @@
 from schemas.request import Sector
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import CompData
 from pipeline.shared.stages.build_report import BuildReportStage
 

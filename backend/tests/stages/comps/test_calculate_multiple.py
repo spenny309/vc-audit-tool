@@ -1,5 +1,5 @@
 from schemas.request import Sector
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import RawCompData
 from pipeline.comps.stages.calculate_multiple import CalculateMultipleStage
 

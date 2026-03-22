@@ -1,5 +1,5 @@
 from pipeline.stage import Stage
-from schemas.context import CompsContext
+from schemas.comps_context import CompsContext
 from schemas.report import ValuationReport
 
 
