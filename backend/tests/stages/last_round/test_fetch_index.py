@@ -54,3 +54,68 @@ def test_nearest_date_early_in_quarter():
     # 2020-04-05 is closer to 2020-03-31 than to 2020-06-30
     result = get_index_at_date(IndexType.NASDAQ, date(2020, 4, 5))
     assert result == 7700.00  # 2020-03-31 entry
+
+
+# --- Stage tests ---
+from pipeline.last_round.stages.fetch_index import LastRoundFetchIndexStage
+from schemas.last_round_context import LastRoundContext
+from data.mock_index import INDEX_VALUE_TODAY, INDEX_QUARTERLY_CLOSES
+
+
+def _make_context(index=IndexType.NASDAQ, round_date=date(2020, 3, 31)) -> LastRoundContext:
+    ctx = LastRoundContext(
+        company_name="Acme",
+        last_post_money_valuation_mm=100.0,
+        last_round_date=str(round_date),
+        index=index,
+    )
+    ctx.last_round_date_parsed = round_date
+    return ctx
+
+
+def test_fetch_index_sets_index_value_at_round_nasdaq():
+    ctx = _make_context(index=IndexType.NASDAQ, round_date=date(2020, 3, 31))
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert result.index_value_at_round == INDEX_QUARTERLY_CLOSES[IndexType.NASDAQ][date(2020, 3, 31)]
+
+
+def test_fetch_index_sets_index_value_at_round_sp500():
+    ctx = _make_context(index=IndexType.SP500, round_date=date(2020, 3, 31))
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert result.index_value_at_round == INDEX_QUARTERLY_CLOSES[IndexType.SP500][date(2020, 3, 31)]
+
+
+def test_fetch_index_sets_index_value_at_round_russell():
+    ctx = _make_context(index=IndexType.RUSSELL, round_date=date(2020, 3, 31))
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert result.index_value_at_round == INDEX_QUARTERLY_CLOSES[IndexType.RUSSELL][date(2020, 3, 31)]
+
+
+def test_fetch_index_sets_index_value_today():
+    ctx = _make_context(index=IndexType.NASDAQ)
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert result.index_value_today == INDEX_VALUE_TODAY[IndexType.NASDAQ]
+
+
+def test_fetch_index_today_is_deterministic_not_date_today():
+    """index_value_today must equal the module constant, not a live lookup."""
+    ctx = _make_context(index=IndexType.SP500)
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert result.index_value_today == INDEX_VALUE_TODAY[IndexType.SP500]
+
+
+def test_citation_includes_index_name():
+    ctx = _make_context(index=IndexType.NASDAQ)
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert len(result.citations) == 1
+    assert "Nasdaq Composite" in result.citations[0]
+    assert "mock historical quarterly close prices" in result.citations[0]
+
+
+def test_assumption_includes_index_name_and_round_date():
+    ctx = _make_context(index=IndexType.NASDAQ, round_date=date(2020, 3, 31))
+    result = LastRoundFetchIndexStage().execute(ctx)
+    assert len(result.assumptions) == 1
+    assert "Nasdaq Composite" in result.assumptions[0]
+    assert "2020-03-31" in result.assumptions[0]
+    assert "nearest quarterly close" in result.assumptions[0]
