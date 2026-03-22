@@ -29,7 +29,7 @@ export default function App() {
       <header className="app-header">
         <h1>VC Audit Tool</h1>
         <span className="header-divider" />
-        <span className="header-tagline">Comparable Company Analysis</span>
+        <span className="header-tagline">Auditable fair value estimates for private portfolio companies</span>
       </header>
 
       <main className="app-main">
