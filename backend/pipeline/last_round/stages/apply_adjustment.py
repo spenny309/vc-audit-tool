@@ -5,9 +5,9 @@ from models.exceptions import CalculationError
 
 class LastRoundApplyAdjustmentStage(Stage[LastRoundContext]):
     def execute(self, context: LastRoundContext) -> LastRoundContext:
-        if not context.index_value_at_round:
+        if context.index_value_at_round is None:
             raise CalculationError(
-                "Index value at round date is zero or missing; cannot compute adjustment"
+                "Index value at round date is missing; cannot compute adjustment"
             )
         index_pct_change = (
             (context.index_value_today - context.index_value_at_round)

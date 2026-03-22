@@ -69,30 +69,6 @@ def test_run_passes_valuation_and_date_to_context():
     assert ctx.last_round_date == "2021-06-30"
 
 
-def test_run_applies_nasdaq_default_when_index_is_none():
-    captured_contexts = []
-
-    class CapturingPipeline:
-        def execute(self, context):
-            captured_contexts.append(context)
-            return ValuationReport(
-                company_name=context.company_name,
-                methodology="Last Round (Market-Adjusted)",
-                fair_value_mm=100.0,
-                explanation="test",
-                assumptions=[],
-                citations=[],
-            )
-
-    # Build request with index=None (model_validator sets it to NASDAQ, but we test model behavior)
-    request = _make_request(index=IndexType.NASDAQ)
-    # Simulate None by patching
-    request.index = None
-    model = LastRoundModel(pipeline=CapturingPipeline())
-    model.run(request)
-    assert captured_contexts[0].index == IndexType.NASDAQ
-
-
 def test_default_pipeline_is_last_round_pipeline():
     model = LastRoundModel()
     assert isinstance(model._pipeline, LastRoundPipeline)

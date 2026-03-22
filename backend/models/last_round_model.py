@@ -15,6 +15,6 @@ class LastRoundModel(ValuationModel):
             company_name=request.company_name,
             last_post_money_valuation_mm=request.last_post_money_valuation_mm,
             last_round_date=request.last_round_date,
-            index=request.index or IndexType.NASDAQ,   # apply default here
+            index=request.index,
         )
         return self._pipeline.execute(context)
