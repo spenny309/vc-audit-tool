@@ -33,7 +33,7 @@ export function ValuationReport({ report }: Props) {
       {report.comps_used && (
         <div className="card">
           <p className="card-title">Comparable Companies</p>
-          <table className="comps-table">
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Company</th>
@@ -60,7 +60,7 @@ export function ValuationReport({ report }: Props) {
         <>
           <div className="card">
             <p className="card-title">Key Inputs</p>
-            <table className="comps-table">
+            <table className="data-table">
               <tbody>
                 <tr>
                   <td>EBITDA Margin</td>
@@ -84,7 +84,7 @@ export function ValuationReport({ report }: Props) {
 
           <div className="card">
             <p className="card-title">Projected Cash Flows</p>
-            <table className="comps-table">
+            <table className="data-table">
               <thead>
                 <tr>
                   <th>Year</th>
@@ -117,7 +117,7 @@ export function ValuationReport({ report }: Props) {
       {report.index_pct_change != null && (
         <div className="card">
           <p className="card-title">Market Adjustment</p>
-          <table className="comps-table">
+          <table className="data-table">
             <tbody>
               <tr>
                 <td>Last Post-Money Valuation</td>

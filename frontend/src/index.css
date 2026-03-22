@@ -222,14 +222,14 @@ body {
   color: #043554;
 }
 
-/* ── Comps table ── */
-.comps-table {
+/* ── Data table ── */
+.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9375rem;
 }
 
-.comps-table th {
+.data-table th {
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
@@ -242,17 +242,17 @@ body {
   white-space: nowrap;
 }
 
-.comps-table td {
+.data-table td {
   padding: 0.75rem 0.75rem;
   border-bottom: 1px solid #f0f7fd;
   color: #043554;
 }
 
-.comps-table tbody tr:last-child td {
+.data-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.comps-table tbody tr:hover {
+.data-table tbody tr:hover {
   background: #f0f7fd;
 }
 
