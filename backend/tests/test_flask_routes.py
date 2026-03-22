@@ -77,7 +77,7 @@ def test_get_models_returns_list(client):
     response = client.get("/api/models")
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert data == ["Comps", "DCF"]
+    assert data == ["Comps", "DCF", "Last Round"]
 
 
 def test_valuate_dcf_returns_report(client):

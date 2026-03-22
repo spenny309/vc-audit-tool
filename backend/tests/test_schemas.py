@@ -1,4 +1,4 @@
-from schemas.request import Sector, ValuationRequest, ModelType
+from schemas.request import Sector, ValuationRequest, ModelType, IndexType
 from schemas.report import RawCompData, CompData, ValuationReport, DcfYearData
 from pydantic import ValidationError
 import pytest
@@ -156,3 +156,90 @@ def test_dcf_valuation_report():
     assert report.terminal_value_mm == 11.95
     assert report.comps_used is None
     assert report.mean_revenue_multiple is None
+
+
+# --- Last Round validation ---
+
+def test_last_round_valid_request():
+    req = ValuationRequest(
+        company_name="Acme",
+        model="Last Round",
+        last_post_money_valuation_mm=100.0,
+        last_round_date="2021-06-30",
+    )
+    assert req.model == ModelType.LAST_ROUND
+    assert req.last_post_money_valuation_mm == 100.0
+    assert req.last_round_date == "2021-06-30"
+    assert req.index == IndexType.NASDAQ  # validator sets default
+
+def test_last_round_missing_valuation_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_round_date="2021-06-30",
+        )
+
+def test_last_round_zero_valuation_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=0.0,
+            last_round_date="2021-06-30",
+        )
+
+def test_last_round_missing_date_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=100.0,
+        )
+
+def test_last_round_invalid_date_format_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="06/30/2021",
+        )
+
+def test_last_round_future_date_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2099-01-01",
+        )
+
+def test_last_round_date_before_2015_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2014-12-31",
+        )
+
+def test_last_round_explicit_sp500_index():
+    req = ValuationRequest(
+        company_name="Acme",
+        model="Last Round",
+        last_post_money_valuation_mm=50.0,
+        last_round_date="2022-06-30",
+        index="S&P 500",
+    )
+    assert req.index == IndexType.SP500
+
+def test_last_round_invalid_index_rejected():
+    with pytest.raises(ValidationError):
+        ValuationRequest(
+            company_name="Acme",
+            model="Last Round",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2021-06-30",
+            index="Dow Jones",
+        )
