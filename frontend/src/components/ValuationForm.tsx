@@ -27,7 +27,7 @@ type FormState = {
 
 type FormAction =
   | { type: 'SET_MODEL'; model: ModelType; defaultIndex: string }
-  | { type: 'SET_FIELD'; field: keyof FormState; value: string };
+  | { type: 'SET_FIELD'; field: Exclude<keyof FormState, 'selectedModel'>; value: string };
 
 const initialFormState: FormState = {
   selectedModel: 'Comps',
@@ -182,11 +182,11 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
         {state.selectedModel === 'DCF' && (
           <>
             {[
-              { id: 'year1', label: 'Year 1 Revenue ($M)', field: 'year1' as keyof FormState, value: state.year1 },
-              { id: 'year2', label: 'Year 2 Revenue ($M)', field: 'year2' as keyof FormState, value: state.year2 },
-              { id: 'year3', label: 'Year 3 Revenue ($M)', field: 'year3' as keyof FormState, value: state.year3 },
-              { id: 'year4', label: 'Year 4 Revenue ($M)', field: 'year4' as keyof FormState, value: state.year4 },
-              { id: 'year5', label: 'Year 5 Revenue ($M)', field: 'year5' as keyof FormState, value: state.year5 },
+              { id: 'year1', label: 'Year 1 Revenue ($M)', field: 'year1' as Exclude<keyof FormState, 'selectedModel'>, value: state.year1 },
+              { id: 'year2', label: 'Year 2 Revenue ($M)', field: 'year2' as Exclude<keyof FormState, 'selectedModel'>, value: state.year2 },
+              { id: 'year3', label: 'Year 3 Revenue ($M)', field: 'year3' as Exclude<keyof FormState, 'selectedModel'>, value: state.year3 },
+              { id: 'year4', label: 'Year 4 Revenue ($M)', field: 'year4' as Exclude<keyof FormState, 'selectedModel'>, value: state.year4 },
+              { id: 'year5', label: 'Year 5 Revenue ($M)', field: 'year5' as Exclude<keyof FormState, 'selectedModel'>, value: state.year5 },
             ].map(({ id, label, field, value }) => (
               <div className="form-group" key={id}>
                 <label className="form-label" htmlFor={id}>{label}</label>
