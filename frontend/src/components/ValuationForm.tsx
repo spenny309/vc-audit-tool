@@ -36,7 +36,10 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
   useEffect(() => {
     getSectors().then(setSectors).catch(console.error);
     getModels().then(setModels).catch(console.error);
-    getIndices().then(setIndices).catch(console.error);
+    getIndices().then((data) => {
+      setIndices(data);
+      if (data.length > 0) setIndex(data[0]);
+    }).catch(console.error);
   }, []);
 
   function handleModelChange(model: ModelType) {
@@ -48,7 +51,7 @@ export function ValuationForm({ onSubmit, isLoading }: Props) {
     setEbitdaMarginPct(''); setDiscountRate(''); setTerminalGrowthRate('');
     setLastPostMoneyValuationMm('');
     setLastRoundDate('');
-    setIndex('');
+    setIndex(indices.length > 0 ? indices[0] : '');
   }
 
   function handleSubmit(e: React.FormEvent) {
