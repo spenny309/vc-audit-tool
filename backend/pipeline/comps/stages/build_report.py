@@ -1,6 +1,6 @@
 from pipeline.stage import Stage
 from schemas.comps_context import CompsContext
-from schemas.report import ValuationReport
+from schemas.report import ValuationReport, CompsDetails
 
 
 class CompsBuildReportStage(Stage[CompsContext]):
@@ -16,10 +16,12 @@ class CompsBuildReportStage(Stage[CompsContext]):
             company_name=context.company_name,
             methodology="Comparable Company Analysis",
             fair_value_mm=context.fair_value_mm,
-            mean_revenue_multiple=context.mean_revenue_multiple,
-            comps_used=context.comps,
             assumptions=context.assumptions,
             citations=context.citations,
             explanation=explanation,
+            comps_details=CompsDetails(
+                mean_revenue_multiple=context.mean_revenue_multiple,
+                comps_used=context.comps,
+            ),
         )
         return context

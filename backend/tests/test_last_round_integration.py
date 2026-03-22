@@ -41,14 +41,14 @@ def test_last_round_sp500_returns_correct_index_name(client):
     resp = client.post("/api/valuate", json=_last_round_payload(index="S&P 500"))
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["index_name"] == "S&P 500"
+    assert data["last_round_details"]["index_name"] == "S&P 500"
 
 
 def test_last_round_russell_returns_correct_index_name(client):
     resp = client.post("/api/valuate", json=_last_round_payload(index="Russell 2000"))
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["index_name"] == "Russell 2000"
+    assert data["last_round_details"]["index_name"] == "Russell 2000"
 
 
 def test_last_round_no_index_defaults_to_nasdaq(client):
@@ -57,7 +57,7 @@ def test_last_round_no_index_defaults_to_nasdaq(client):
     resp = client.post("/api/valuate", json=payload)
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["index_name"] == "Nasdaq Composite"
+    assert data["last_round_details"]["index_name"] == "Nasdaq Composite"
 
 
 def test_get_indices_returns_all_three(client):

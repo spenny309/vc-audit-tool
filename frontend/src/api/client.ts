@@ -14,6 +14,28 @@ export interface DcfYearData {
   discounted_fcf_mm: number;
 }
 
+export interface CompsDetails {
+  mean_revenue_multiple: number;
+  comps_used: CompData[];
+}
+
+export interface DcfDetails {
+  dcf_cashflows: DcfYearData[];
+  terminal_value_mm: number;
+  ebitda_margin_pct: number;
+  discount_rate: number;
+  terminal_growth_rate: number;
+}
+
+export interface LastRoundDetails {
+  last_post_money_valuation_mm: number;
+  last_round_date: string;
+  index_name: string;
+  index_value_at_round: number;
+  index_value_today: number;
+  index_pct_change: number;
+}
+
 export interface ValuationRequest {
   company_name: string;
   model: ModelType;
@@ -38,22 +60,9 @@ export interface ValuationReport {
   assumptions: string[];
   citations: string[];
   explanation: string;
-  // Comps-specific
-  mean_revenue_multiple?: number;
-  comps_used?: CompData[];
-  // DCF-specific
-  dcf_cashflows?: DcfYearData[];
-  terminal_value_mm?: number;
-  ebitda_margin_pct?: number;
-  discount_rate?: number;
-  terminal_growth_rate?: number;
-  // Last Round-specific
-  last_post_money_valuation_mm?: number;
-  last_round_date?: string;
-  index_name?: string;
-  index_value_at_round?: number;
-  index_value_today?: number;
-  index_pct_change?: number;
+  comps_details?: CompsDetails;
+  dcf_details?: DcfDetails;
+  last_round_details?: LastRoundDetails;
 }
 
 export interface ApiError {

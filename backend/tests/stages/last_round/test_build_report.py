@@ -28,12 +28,13 @@ def test_all_last_round_fields_populated():
     assert report.company_name == "Acme Corp"
     assert report.methodology == "Last Round (Market-Adjusted)"
     assert report.fair_value_mm == 240.26
-    assert report.last_post_money_valuation_mm == 100.0
-    assert report.last_round_date == "2020-03-31"
-    assert report.index_name == "Nasdaq Composite"
-    assert report.index_value_at_round == 7700.0
-    assert report.index_value_today == 18500.0
-    assert report.index_pct_change == 1.40259
+    assert report.last_round_details is not None
+    assert report.last_round_details.last_post_money_valuation_mm == 100.0
+    assert report.last_round_details.last_round_date == "2020-03-31"
+    assert report.last_round_details.index_name == "Nasdaq Composite"
+    assert report.last_round_details.index_value_at_round == 7700.0
+    assert report.last_round_details.index_value_today == 18500.0
+    assert report.last_round_details.index_pct_change == 1.40259
 
 
 def test_explanation_contains_key_info():

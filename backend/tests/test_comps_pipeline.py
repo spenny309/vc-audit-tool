@@ -21,8 +21,9 @@ def test_report_has_all_fields_populated():
     report = CompsPipeline().execute(ctx)
     assert report.company_name == "Modus"
     assert report.fair_value_mm > 0
-    assert report.mean_revenue_multiple > 0
-    assert len(report.comps_used) >= 2
+    assert report.comps_details is not None
+    assert report.comps_details.mean_revenue_multiple > 0
+    assert len(report.comps_details.comps_used) >= 2
     assert len(report.assumptions) >= 3
     assert len(report.citations) >= 1
     assert report.explanation != ""

@@ -30,8 +30,9 @@ def test_report_has_all_required_fields():
     assert report.company_name == "Modus"
     assert report.methodology == "Comparable Company Analysis"
     assert report.fair_value_mm == 71.9
-    assert report.mean_revenue_multiple == 7.19
-    assert len(report.comps_used) == 2
+    assert report.comps_details is not None
+    assert report.comps_details.mean_revenue_multiple == 7.19
+    assert len(report.comps_details.comps_used) == 2
     assert len(report.assumptions) == 2
     assert len(report.citations) == 1
 

@@ -12,9 +12,10 @@ def test_full_pipeline_produces_valid_report_for_all_sectors(sector):
     assert isinstance(report, ValuationReport)
     assert report.company_name == "Test Co"
     assert report.methodology == "Comparable Company Analysis"
-    assert report.mean_revenue_multiple > 0
-    assert report.fair_value_mm == round(report.mean_revenue_multiple * 50.0, 2)
-    assert len(report.comps_used) >= 2
+    assert report.comps_details is not None
+    assert report.comps_details.mean_revenue_multiple > 0
+    assert report.fair_value_mm == round(report.comps_details.mean_revenue_multiple * 50.0, 2)
+    assert len(report.comps_details.comps_used) >= 2
     assert len(report.assumptions) >= 3
     assert len(report.citations) >= 1
     assert report.explanation != ""
@@ -24,7 +25,7 @@ def test_full_pipeline_produces_valid_report_for_all_sectors(sector):
 def test_fair_value_is_multiple_times_revenue():
     request = ValuationRequest(company_name="Test Co", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=10.0)
     report = CompsModel().run(request)
-    expected = round(report.mean_revenue_multiple * 10.0, 2)
+    expected = round(report.comps_details.mean_revenue_multiple * 10.0, 2)
     assert report.fair_value_mm == expected
 
 

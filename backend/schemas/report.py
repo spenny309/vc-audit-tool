@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
 
@@ -22,6 +23,28 @@ class DcfYearData(BaseModel):
     discounted_fcf_mm: float     # fcf_mm / (1 + discount_rate) ^ year
 
 
+class CompsDetails(BaseModel):
+    mean_revenue_multiple: float
+    comps_used: list[CompData]
+
+
+class DcfDetails(BaseModel):
+    dcf_cashflows: list[DcfYearData]
+    terminal_value_mm: float
+    ebitda_margin_pct: float
+    discount_rate: float
+    terminal_growth_rate: float
+
+
+class LastRoundDetails(BaseModel):
+    last_post_money_valuation_mm: float
+    last_round_date: str
+    index_name: str
+    index_value_at_round: float
+    index_value_today: float
+    index_pct_change: float
+
+
 class ValuationReport(BaseModel):
     # Common — always populated
     company_name: str
@@ -31,21 +54,7 @@ class ValuationReport(BaseModel):
     citations: list[str]
     explanation: str
 
-    # Comps-specific — None for DCF reports
-    mean_revenue_multiple: Optional[float] = None
-    comps_used: Optional[list[CompData]] = None
-
-    # DCF-specific — None for Comps reports
-    dcf_cashflows: Optional[list[DcfYearData]] = None
-    terminal_value_mm: Optional[float] = None    # discounted terminal value
-    ebitda_margin_pct: Optional[float] = None
-    discount_rate: Optional[float] = None
-    terminal_growth_rate: Optional[float] = None
-
-    # Last Round-specific — None for Comps and DCF reports
-    last_post_money_valuation_mm: Optional[float] = None
-    last_round_date: Optional[str] = None
-    index_name: Optional[str] = None
-    index_value_at_round: Optional[float] = None
-    index_value_today: Optional[float] = None
-    index_pct_change: Optional[float] = None
+    # Model-specific — exactly one is populated per report
+    comps_details: Optional[CompsDetails] = None
+    dcf_details: Optional[DcfDetails] = None
+    last_round_details: Optional[LastRoundDetails] = None

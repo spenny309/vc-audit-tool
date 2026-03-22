@@ -35,7 +35,7 @@ def test_valuate_returns_report(client):
     assert "assumptions" in data
     assert "citations" in data
     assert "explanation" in data
-    assert "comps_used" in data
+    assert "comps_details" in data
 
 
 def test_valuate_rejects_invalid_sector(client):
@@ -97,8 +97,8 @@ def test_valuate_dcf_returns_report(client):
     assert data["company_name"] == "Alpha"
     assert data["methodology"] == "Discounted Cash Flow"
     assert data["fair_value_mm"] > 0
-    assert "dcf_cashflows" in data
-    assert len(data["dcf_cashflows"]) == 5
+    assert "dcf_details" in data
+    assert len(data["dcf_details"]["dcf_cashflows"]) == 5
 
 
 def test_valuate_dcf_rejects_missing_projections(client):

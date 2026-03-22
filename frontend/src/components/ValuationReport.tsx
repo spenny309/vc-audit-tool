@@ -18,10 +18,10 @@ export function ValuationReport({ report }: Props) {
             <div className="fair-value-label">Fair Value Estimate</div>
             <div className="fair-value-amount">${report.fair_value_mm.toFixed(2)}M</div>
           </div>
-          {report.mean_revenue_multiple != null && (
+          {report.comps_details != null && (
             <div className="fair-value-right">
               <div className="multiple-label">Mean EV / Revenue</div>
-              <div className="multiple-value">{report.mean_revenue_multiple?.toFixed(2)}x</div>
+              <div className="multiple-value">{report.comps_details.mean_revenue_multiple.toFixed(2)}x</div>
             </div>
           )}
         </div>
@@ -30,7 +30,7 @@ export function ValuationReport({ report }: Props) {
         <p className="explanation-text">{report.explanation}</p>
       </div>
 
-      {report.comps_used && (
+      {report.comps_details && (
         <div className="card">
           <p className="card-title">Comparable Companies</p>
           <table className="data-table">
@@ -43,7 +43,7 @@ export function ValuationReport({ report }: Props) {
               </tr>
             </thead>
             <tbody>
-              {report.comps_used.map((comp) => (
+              {report.comps_details.comps_used.map((comp) => (
                 <tr key={comp.name}>
                   <td>{comp.name}</td>
                   <td>{comp.enterprise_value_mm.toLocaleString()}</td>
@@ -56,7 +56,7 @@ export function ValuationReport({ report }: Props) {
         </div>
       )}
 
-      {report.dcf_cashflows && (
+      {report.dcf_details && (
         <>
           <div className="card">
             <p className="card-title">Key Inputs</p>
@@ -64,19 +64,19 @@ export function ValuationReport({ report }: Props) {
               <tbody>
                 <tr>
                   <td>EBITDA Margin</td>
-                  <td>{((report.ebitda_margin_pct ?? 0) * 100).toFixed(1)}%</td>
+                  <td>{(report.dcf_details.ebitda_margin_pct * 100).toFixed(1)}%</td>
                 </tr>
                 <tr>
                   <td>Discount Rate (WACC)</td>
-                  <td>{((report.discount_rate ?? 0) * 100).toFixed(1)}%</td>
+                  <td>{(report.dcf_details.discount_rate * 100).toFixed(1)}%</td>
                 </tr>
                 <tr>
                   <td>Terminal Growth Rate</td>
-                  <td>{((report.terminal_growth_rate ?? 0) * 100).toFixed(1)}%</td>
+                  <td>{(report.dcf_details.terminal_growth_rate * 100).toFixed(1)}%</td>
                 </tr>
                 <tr>
                   <td>Discounted Terminal Value</td>
-                  <td>${(report.terminal_value_mm ?? 0).toFixed(2)}M</td>
+                  <td>${report.dcf_details.terminal_value_mm.toFixed(2)}M</td>
                 </tr>
               </tbody>
             </table>
@@ -94,7 +94,7 @@ export function ValuationReport({ report }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {report.dcf_cashflows.map((cf) => (
+                {report.dcf_details.dcf_cashflows.map((cf) => (
                   <tr key={cf.year}>
                     <td>Year {cf.year}</td>
                     <td>{cf.revenue_mm.toFixed(2)}</td>
@@ -106,7 +106,7 @@ export function ValuationReport({ report }: Props) {
                   <td><strong>Terminal Value</strong></td>
                   <td>—</td>
                   <td>—</td>
-                  <td><strong>{(report.terminal_value_mm ?? 0).toFixed(2)}</strong></td>
+                  <td><strong>{report.dcf_details.terminal_value_mm.toFixed(2)}</strong></td>
                 </tr>
               </tbody>
             </table>
@@ -114,36 +114,36 @@ export function ValuationReport({ report }: Props) {
         </>
       )}
 
-      {report.index_pct_change != null && (
+      {report.last_round_details && (
         <div className="card">
           <p className="card-title">Market Adjustment</p>
           <table className="data-table">
             <tbody>
               <tr>
                 <td>Last Post-Money Valuation</td>
-                <td>${report.last_post_money_valuation_mm?.toFixed(2)}M</td>
+                <td>${report.last_round_details.last_post_money_valuation_mm.toFixed(2)}M</td>
               </tr>
               <tr>
                 <td>Date of Last Round</td>
-                <td>{report.last_round_date}</td>
+                <td>{report.last_round_details.last_round_date}</td>
               </tr>
               <tr>
                 <td>Index Used</td>
-                <td>{report.index_name}</td>
+                <td>{report.last_round_details.index_name}</td>
               </tr>
               <tr>
                 <td>Index at Round Date</td>
-                <td>{report.index_value_at_round?.toLocaleString()}</td>
+                <td>{report.last_round_details.index_value_at_round.toLocaleString()}</td>
               </tr>
               <tr>
                 <td>Index Today</td>
-                <td>{report.index_value_today?.toLocaleString()}</td>
+                <td>{report.last_round_details.index_value_today.toLocaleString()}</td>
               </tr>
               <tr>
                 <td>Market Adjustment</td>
-                <td style={{ color: (report.index_pct_change ?? 0) >= 0 ? 'green' : 'red' }}>
-                  {((report.index_pct_change ?? 0) * 100).toFixed(1)}%
-                  {(report.index_pct_change ?? 0) >= 0 ? ' ▲' : ' ▼'}
+                <td style={{ color: report.last_round_details.index_pct_change >= 0 ? 'green' : 'red' }}>
+                  {(report.last_round_details.index_pct_change * 100).toFixed(1)}%
+                  {report.last_round_details.index_pct_change >= 0 ? ' ▲' : ' ▼'}
                 </td>
               </tr>
             </tbody>

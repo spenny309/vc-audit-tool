@@ -29,14 +29,15 @@ def test_dcf_integration_strips_company_name():
 def test_dcf_integration_five_cashflows():
     model = DcfModel()
     report = model.run(_make_request())
-    assert len(report.dcf_cashflows) == 5
-    assert [cf.year for cf in report.dcf_cashflows] == [1, 2, 3, 4, 5]
+    assert report.dcf_details is not None
+    assert len(report.dcf_details.dcf_cashflows) == 5
+    assert [cf.year for cf in report.dcf_details.dcf_cashflows] == [1, 2, 3, 4, 5]
 
 
 def test_dcf_integration_cashflow_year1():
     model = DcfModel()
     report = model.run(_make_request())
-    cf1 = report.dcf_cashflows[0]
+    cf1 = report.dcf_details.dcf_cashflows[0]
     assert cf1.revenue_mm == 10.0
     assert cf1.fcf_mm == 2.0
     assert cf1.discounted_fcf_mm == 1.74
@@ -45,7 +46,7 @@ def test_dcf_integration_cashflow_year1():
 def test_dcf_integration_cashflow_year5():
     model = DcfModel()
     report = model.run(_make_request())
-    cf5 = report.dcf_cashflows[4]
+    cf5 = report.dcf_details.dcf_cashflows[4]
     assert cf5.revenue_mm == 14.0
     assert cf5.fcf_mm == 2.8
     assert cf5.discounted_fcf_mm == 1.39
@@ -54,7 +55,7 @@ def test_dcf_integration_cashflow_year5():
 def test_dcf_integration_terminal_value():
     model = DcfModel()
     report = model.run(_make_request())
-    assert report.terminal_value_mm == 11.95
+    assert report.dcf_details.terminal_value_mm == 11.95
 
 
 def test_dcf_integration_fair_value():
@@ -66,9 +67,9 @@ def test_dcf_integration_fair_value():
 def test_dcf_integration_rate_fields():
     model = DcfModel()
     report = model.run(_make_request())
-    assert report.ebitda_margin_pct == 0.20
-    assert report.discount_rate == 0.15
-    assert report.terminal_growth_rate == 0.03
+    assert report.dcf_details.ebitda_margin_pct == 0.20
+    assert report.dcf_details.discount_rate == 0.15
+    assert report.dcf_details.terminal_growth_rate == 0.03
 
 
 def test_dcf_integration_assumptions_and_citations():
@@ -82,12 +83,11 @@ def test_dcf_integration_assumptions_and_citations():
 def test_dcf_integration_fair_value_equals_cashflows_plus_tv():
     model = DcfModel()
     report = model.run(_make_request())
-    sum_discounted = sum(cf.discounted_fcf_mm for cf in report.dcf_cashflows)
-    assert round(sum_discounted + report.terminal_value_mm, 2) == report.fair_value_mm
+    sum_discounted = sum(cf.discounted_fcf_mm for cf in report.dcf_details.dcf_cashflows)
+    assert round(sum_discounted + report.dcf_details.terminal_value_mm, 2) == report.fair_value_mm
 
 
 def test_dcf_integration_comps_fields_are_none():
     model = DcfModel()
     report = model.run(_make_request())
-    assert report.comps_used is None
-    assert report.mean_revenue_multiple is None
+    assert report.comps_details is None

@@ -48,25 +48,24 @@ def test_build_report_fair_value(context_after_terminal):
 def test_build_report_dcf_cashflows_populated(context_after_terminal):
     stage = DcfBuildReportStage()
     result = stage.execute(context_after_terminal)
-    assert result.report.dcf_cashflows is not None
-    assert len(result.report.dcf_cashflows) == 5
-    assert result.report.dcf_cashflows[0].year == 1
+    assert result.report.dcf_details is not None
+    assert len(result.report.dcf_details.dcf_cashflows) == 5
+    assert result.report.dcf_details.dcf_cashflows[0].year == 1
 
 
 def test_build_report_rate_fields_populated(context_after_terminal):
     stage = DcfBuildReportStage()
     result = stage.execute(context_after_terminal)
-    assert result.report.terminal_value_mm == 11.95
-    assert result.report.ebitda_margin_pct == 0.20
-    assert result.report.discount_rate == 0.15
-    assert result.report.terminal_growth_rate == 0.03
+    assert result.report.dcf_details.terminal_value_mm == 11.95
+    assert result.report.dcf_details.ebitda_margin_pct == 0.20
+    assert result.report.dcf_details.discount_rate == 0.15
+    assert result.report.dcf_details.terminal_growth_rate == 0.03
 
 
 def test_build_report_comps_fields_are_none(context_after_terminal):
     stage = DcfBuildReportStage()
     result = stage.execute(context_after_terminal)
-    assert result.report.comps_used is None
-    assert result.report.mean_revenue_multiple is None
+    assert result.report.comps_details is None
 
 
 def test_build_report_assumptions_and_citations_passed_through(context_after_terminal):

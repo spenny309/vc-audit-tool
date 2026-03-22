@@ -1,6 +1,6 @@
 from pipeline.stage import Stage
 from schemas.last_round_context import LastRoundContext
-from schemas.report import ValuationReport
+from schemas.report import ValuationReport, LastRoundDetails
 
 
 class LastRoundBuildReportStage(Stage[LastRoundContext]):
@@ -21,11 +21,13 @@ class LastRoundBuildReportStage(Stage[LastRoundContext]):
             explanation=explanation,
             assumptions=context.assumptions,
             citations=context.citations,
-            last_post_money_valuation_mm=context.last_post_money_valuation_mm,
-            last_round_date=context.last_round_date,
-            index_name=index_name,
-            index_value_at_round=context.index_value_at_round,
-            index_value_today=context.index_value_today,
-            index_pct_change=context.index_pct_change,
+            last_round_details=LastRoundDetails(
+                last_post_money_valuation_mm=context.last_post_money_valuation_mm,
+                last_round_date=context.last_round_date,
+                index_name=index_name,
+                index_value_at_round=context.index_value_at_round,
+                index_value_today=context.index_value_today,
+                index_pct_change=context.index_pct_change,
+            ),
         )
         return context

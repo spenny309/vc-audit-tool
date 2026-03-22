@@ -1,5 +1,5 @@
 from schemas.request import Sector, ValuationRequest, ModelType, IndexType
-from schemas.report import RawCompData, CompData, ValuationReport, DcfYearData
+from schemas.report import RawCompData, CompData, ValuationReport, DcfYearData, CompsDetails, DcfDetails
 from pydantic import ValidationError
 import pytest
 
@@ -117,14 +117,14 @@ def test_valuation_report():
         company_name="Modus",
         methodology="Comparable Company Analysis",
         fair_value_mm=63.8,
-        mean_revenue_multiple=6.38,
-        comps_used=[comp],
         assumptions=["Mean EV/Revenue multiple of 6.4x across 1 comparables"],
         citations=["Mock dataset (Yahoo Finance API in production)"],
         explanation="Modus was valued at $63.8M using a mean EV/Revenue multiple of 6.4x.",
+        comps_details=CompsDetails(mean_revenue_multiple=6.38, comps_used=[comp]),
     )
     assert report.fair_value_mm == 63.8
-    assert len(report.comps_used) == 1
+    assert report.comps_details is not None
+    assert len(report.comps_details.comps_used) == 1
 
 
 # --- DcfYearData ---
@@ -146,16 +146,18 @@ def test_dcf_valuation_report():
         assumptions=["Target company: Alpha, 5-year DCF projection"],
         citations=["Projections provided by user"],
         explanation="Alpha was valued at $19.8M.",
-        dcf_cashflows=[row],
-        terminal_value_mm=11.95,
-        ebitda_margin_pct=0.20,
-        discount_rate=0.15,
-        terminal_growth_rate=0.03,
+        dcf_details=DcfDetails(
+            dcf_cashflows=[row],
+            terminal_value_mm=11.95,
+            ebitda_margin_pct=0.20,
+            discount_rate=0.15,
+            terminal_growth_rate=0.03,
+        ),
     )
-    assert report.dcf_cashflows[0].year == 1
-    assert report.terminal_value_mm == 11.95
-    assert report.comps_used is None
-    assert report.mean_revenue_multiple is None
+    assert report.dcf_details is not None
+    assert report.dcf_details.dcf_cashflows[0].year == 1
+    assert report.dcf_details.terminal_value_mm == 11.95
+    assert report.comps_details is None
 
 
 # --- Last Round validation ---
