@@ -114,6 +114,43 @@ export function ValuationReport({ report }: Props) {
         </>
       )}
 
+      {report.index_pct_change !== undefined && (
+        <div className="card">
+          <p className="card-title">Market Adjustment</p>
+          <table className="comps-table">
+            <tbody>
+              <tr>
+                <td>Last Post-Money Valuation</td>
+                <td>${report.last_post_money_valuation_mm}M</td>
+              </tr>
+              <tr>
+                <td>Date of Last Round</td>
+                <td>{report.last_round_date}</td>
+              </tr>
+              <tr>
+                <td>Index Used</td>
+                <td>{report.index_name}</td>
+              </tr>
+              <tr>
+                <td>Index at Round Date</td>
+                <td>{report.index_value_at_round?.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Index Today</td>
+                <td>{report.index_value_today?.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Market Adjustment</td>
+                <td style={{ color: (report.index_pct_change ?? 0) >= 0 ? 'green' : 'red' }}>
+                  {((report.index_pct_change ?? 0) * 100).toFixed(1)}%
+                  {(report.index_pct_change ?? 0) >= 0 ? ' ▲' : ' ▼'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="card">
         <p className="card-title">Assumptions</p>
         <ul className="audit-list">
