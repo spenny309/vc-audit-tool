@@ -1,11 +1,11 @@
 from models.dcf_model import DcfModel
-from schemas.request import ValuationRequest, ModelType
+from schemas.request import DcfRequest
 
 
 def _make_request():
-    return ValuationRequest(
+    return DcfRequest(
+        model="DCF",
         company_name="  Alpha  ",
-        model=ModelType.DCF,
         projections=[10.0, 11.0, 12.0, 13.0, 14.0],
         ebitda_margin_pct=0.20,
         discount_rate=0.15,

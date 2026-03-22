@@ -1,100 +1,214 @@
-from schemas.request import Sector, ValuationRequest, ModelType, IndexType
+from schemas.request import (
+    Sector, ModelType, IndexType,
+    CompsRequest, DcfRequest, LastRoundRequest,
+)
 from schemas.report import RawCompData, CompData, ValuationReport, DcfYearData, CompsDetails, DcfDetails
 from pydantic import ValidationError
 import pytest
 
 
-# --- Updated existing tests (add model field) ---
+# ---------------------------------------------------------------------------
+# CompsRequest validation
+# ---------------------------------------------------------------------------
 
-def test_valid_valuation_request():
-    req = ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=10.0)
+def test_valid_comps_request():
+    req = CompsRequest(model="Comps", company_name="Modus", sector=Sector.SAAS, revenue_mm=10.0)
     assert req.company_name == "Modus"
-    assert req.model == ModelType.COMPS
+    assert req.model == "Comps"
     assert req.sector == Sector.SAAS
     assert req.revenue_mm == 10.0
 
 
 def test_invalid_sector_rejected():
     with pytest.raises(ValidationError):
-        ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector="NotASector", revenue_mm=10.0)
+        CompsRequest(model="Comps", company_name="Modus", sector="NotASector", revenue_mm=10.0)
 
 
 def test_negative_revenue_rejected():
     with pytest.raises(ValidationError):
-        ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=-1.0)
+        CompsRequest(model="Comps", company_name="Modus", sector=Sector.SAAS, revenue_mm=-1.0)
 
 
 def test_zero_revenue_rejected():
     with pytest.raises(ValidationError):
-        ValuationRequest(company_name="Modus", model=ModelType.COMPS, sector=Sector.SAAS, revenue_mm=0.0)
+        CompsRequest(model="Comps", company_name="Modus", sector=Sector.SAAS, revenue_mm=0.0)
 
-
-# --- model_validator: Comps missing fields ---
 
 def test_comps_missing_sector_rejected():
-    with pytest.raises(ValidationError, match="sector is required"):
-        ValuationRequest(company_name="X", model=ModelType.COMPS, revenue_mm=10.0)
+    with pytest.raises(ValidationError):
+        CompsRequest(model="Comps", company_name="X", revenue_mm=10.0)
 
 
 def test_comps_missing_revenue_rejected():
-    with pytest.raises(ValidationError, match="revenue_mm must be greater than 0"):
-        ValuationRequest(company_name="X", model=ModelType.COMPS, sector=Sector.SAAS)
+    with pytest.raises(ValidationError):
+        CompsRequest(model="Comps", company_name="X", sector=Sector.SAAS)
 
 
-# --- model_validator: DCF valid request ---
+# ---------------------------------------------------------------------------
+# DcfRequest validation
+# ---------------------------------------------------------------------------
 
 def test_valid_dcf_request():
-    req = ValuationRequest(
+    req = DcfRequest(
+        model="DCF",
         company_name="Alpha",
-        model=ModelType.DCF,
         projections=[10.0, 11.0, 12.0, 13.0, 14.0],
         ebitda_margin_pct=0.20,
         discount_rate=0.15,
         terminal_growth_rate=0.03,
     )
-    assert req.model == ModelType.DCF
+    assert req.model == "DCF"
     assert req.projections == [10.0, 11.0, 12.0, 13.0, 14.0]
 
 
-# --- model_validator: DCF invalid projections ---
-
 def test_dcf_wrong_projection_count_rejected():
-    with pytest.raises(ValidationError, match="exactly 5 values"):
-        ValuationRequest(
-            company_name="X", model=ModelType.DCF,
+    with pytest.raises(ValidationError, match="exactly 5 annual values"):
+        DcfRequest(
+            model="DCF",
+            company_name="X",
             projections=[10.0, 11.0, 12.0],
-            ebitda_margin_pct=0.20, discount_rate=0.15, terminal_growth_rate=0.03,
+            ebitda_margin_pct=0.20,
+            discount_rate=0.15,
+            terminal_growth_rate=0.03,
         )
 
 
 def test_dcf_negative_projection_rejected():
-    with pytest.raises(ValidationError, match="all projection values must be greater than 0"):
-        ValuationRequest(
-            company_name="X", model=ModelType.DCF,
+    with pytest.raises(ValidationError, match="all projections must be greater than 0"):
+        DcfRequest(
+            model="DCF",
+            company_name="X",
             projections=[10.0, -1.0, 12.0, 13.0, 14.0],
-            ebitda_margin_pct=0.20, discount_rate=0.15, terminal_growth_rate=0.03,
+            ebitda_margin_pct=0.20,
+            discount_rate=0.15,
+            terminal_growth_rate=0.03,
         )
 
 
 def test_dcf_terminal_growth_exceeds_discount_rejected():
     with pytest.raises(ValidationError, match="terminal_growth_rate must be less than discount_rate"):
-        ValuationRequest(
-            company_name="X", model=ModelType.DCF,
+        DcfRequest(
+            model="DCF",
+            company_name="X",
             projections=[10.0, 11.0, 12.0, 13.0, 14.0],
-            ebitda_margin_pct=0.20, discount_rate=0.10, terminal_growth_rate=0.15,
+            ebitda_margin_pct=0.20,
+            discount_rate=0.10,
+            terminal_growth_rate=0.15,
         )
 
 
 def test_dcf_out_of_range_margin_rejected():
-    with pytest.raises(ValidationError, match="ebitda_margin_pct must be between 0 and 1"):
-        ValuationRequest(
-            company_name="X", model=ModelType.DCF,
+    with pytest.raises(ValidationError, match="rate must be between 0 and 1"):
+        DcfRequest(
+            model="DCF",
+            company_name="X",
             projections=[10.0, 11.0, 12.0, 13.0, 14.0],
-            ebitda_margin_pct=1.5, discount_rate=0.15, terminal_growth_rate=0.03,
+            ebitda_margin_pct=1.5,
+            discount_rate=0.15,
+            terminal_growth_rate=0.03,
         )
 
 
-# --- Updated ValuationReport tests (Comps fields still provided) ---
+# ---------------------------------------------------------------------------
+# LastRoundRequest validation
+# ---------------------------------------------------------------------------
+
+def test_last_round_valid_request():
+    req = LastRoundRequest(
+        model="Last Round",
+        company_name="Acme",
+        last_post_money_valuation_mm=100.0,
+        last_round_date="2021-06-30",
+    )
+    assert req.model == "Last Round"
+    assert req.last_post_money_valuation_mm == 100.0
+    assert req.last_round_date == "2021-06-30"
+    assert req.index == IndexType.NASDAQ  # validator sets default
+
+
+def test_last_round_missing_valuation_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_round_date="2021-06-30",
+        )
+
+
+def test_last_round_zero_valuation_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=0.0,
+            last_round_date="2021-06-30",
+        )
+
+
+def test_last_round_missing_date_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=100.0,
+        )
+
+
+def test_last_round_invalid_date_format_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="06/30/2021",
+        )
+
+
+def test_last_round_future_date_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2099-01-01",
+        )
+
+
+def test_last_round_date_before_2015_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2014-12-31",
+        )
+
+
+def test_last_round_explicit_sp500_index():
+    req = LastRoundRequest(
+        model="Last Round",
+        company_name="Acme",
+        last_post_money_valuation_mm=50.0,
+        last_round_date="2022-06-30",
+        index="S&P 500",
+    )
+    assert req.index == IndexType.SP500
+
+
+def test_last_round_invalid_index_rejected():
+    with pytest.raises(ValidationError):
+        LastRoundRequest(
+            model="Last Round",
+            company_name="Acme",
+            last_post_money_valuation_mm=100.0,
+            last_round_date="2021-06-30",
+            index="Dow Jones",
+        )
+
+
+# ---------------------------------------------------------------------------
+# ValuationReport tests (unchanged)
+# ---------------------------------------------------------------------------
 
 def test_raw_comp_data():
     comp = RawCompData(name="Salesforce", enterprise_value_mm=200_000, revenue_mm=31_352)
@@ -127,15 +241,11 @@ def test_valuation_report():
     assert len(report.comps_details.comps_used) == 1
 
 
-# --- DcfYearData ---
-
 def test_dcf_year_data():
     row = DcfYearData(year=1, revenue_mm=10.0, fcf_mm=2.0, discounted_fcf_mm=1.74)
     assert row.year == 1
     assert row.discounted_fcf_mm == 1.74
 
-
-# --- ValuationReport with DCF fields ---
 
 def test_dcf_valuation_report():
     row = DcfYearData(year=1, revenue_mm=10.0, fcf_mm=2.0, discounted_fcf_mm=1.74)
@@ -158,90 +268,3 @@ def test_dcf_valuation_report():
     assert report.dcf_details.dcf_cashflows[0].year == 1
     assert report.dcf_details.terminal_value_mm == 11.95
     assert report.comps_details is None
-
-
-# --- Last Round validation ---
-
-def test_last_round_valid_request():
-    req = ValuationRequest(
-        company_name="Acme",
-        model="Last Round",
-        last_post_money_valuation_mm=100.0,
-        last_round_date="2021-06-30",
-    )
-    assert req.model == ModelType.LAST_ROUND
-    assert req.last_post_money_valuation_mm == 100.0
-    assert req.last_round_date == "2021-06-30"
-    assert req.index == IndexType.NASDAQ  # validator sets default
-
-def test_last_round_missing_valuation_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_round_date="2021-06-30",
-        )
-
-def test_last_round_zero_valuation_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=0.0,
-            last_round_date="2021-06-30",
-        )
-
-def test_last_round_missing_date_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=100.0,
-        )
-
-def test_last_round_invalid_date_format_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=100.0,
-            last_round_date="06/30/2021",
-        )
-
-def test_last_round_future_date_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=100.0,
-            last_round_date="2099-01-01",
-        )
-
-def test_last_round_date_before_2015_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=100.0,
-            last_round_date="2014-12-31",
-        )
-
-def test_last_round_explicit_sp500_index():
-    req = ValuationRequest(
-        company_name="Acme",
-        model="Last Round",
-        last_post_money_valuation_mm=50.0,
-        last_round_date="2022-06-30",
-        index="S&P 500",
-    )
-    assert req.index == IndexType.SP500
-
-def test_last_round_invalid_index_rejected():
-    with pytest.raises(ValidationError):
-        ValuationRequest(
-            company_name="Acme",
-            model="Last Round",
-            last_post_money_valuation_mm=100.0,
-            last_round_date="2021-06-30",
-            index="Dow Jones",
-        )

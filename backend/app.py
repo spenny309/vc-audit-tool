@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from models.comps_model import CompsModel
 from models.dcf_model import DcfModel
@@ -15,6 +15,8 @@ MODEL_REGISTRY: dict[ModelType, ValuationModel] = {
     ModelType.DCF: DcfModel(),
     ModelType.LAST_ROUND: LastRoundModel(),
 }
+
+_request_adapter = TypeAdapter(ValuationRequest)
 
 
 def create_app(registry: dict[ModelType, ValuationModel] = None) -> Flask:
@@ -39,12 +41,13 @@ def create_app(registry: dict[ModelType, ValuationModel] = None) -> Flask:
     @app.route("/api/valuate", methods=["POST"])
     def valuate():
         try:
-            valuation_request = ValuationRequest(**request.get_json(force=True))
+            valuation_request = _request_adapter.validate_python(request.get_json(force=True))
         except (ValidationError, TypeError) as e:
             return jsonify({"error": "ValidationError", "message": str(e), "status": 400}), 400
 
         try:
-            report = registry[valuation_request.model].run(valuation_request)
+            model_key = ModelType(valuation_request.model)
+            report = registry[model_key].run(valuation_request)
             return jsonify(report.model_dump()), 200
         except (NoCompsFoundError, InsufficientDataError) as e:
             return jsonify({"error": type(e).__name__, "message": str(e), "status": 422}), 422

@@ -3,14 +3,14 @@ from pipeline.pipeline import Pipeline
 from models.valuation_model import ValuationModel
 from schemas.dcf_context import DcfContext
 from schemas.report import ValuationReport
-from schemas.request import ValuationRequest
+from schemas.request import DcfRequest
 
 
 class DcfModel(ValuationModel):
     def __init__(self, pipeline: Pipeline[DcfContext] | None = None) -> None:
         self._pipeline = pipeline or DcfPipeline()
 
-    def run(self, request: ValuationRequest) -> ValuationReport:
+    def run(self, request: DcfRequest) -> ValuationReport:
         context = DcfContext(
             company_name=request.company_name,
             projections=request.projections,

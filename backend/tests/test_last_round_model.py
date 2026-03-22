@@ -4,19 +4,19 @@ from models.last_round_model import LastRoundModel
 from pipeline.last_round.last_round_pipeline import LastRoundPipeline
 from schemas.last_round_context import LastRoundContext
 from schemas.report import ValuationReport
-from schemas.request import ValuationRequest, IndexType
+from schemas.request import LastRoundRequest, IndexType
 
 
-def _make_request(**kwargs) -> ValuationRequest:
+def _make_request(**kwargs) -> LastRoundRequest:
     defaults = dict(
-        company_name="Acme",
         model="Last Round",
+        company_name="Acme",
         last_post_money_valuation_mm=100.0,
         last_round_date="2020-03-31",
         index=IndexType.NASDAQ,
     )
     defaults.update(kwargs)
-    return ValuationRequest(**defaults)
+    return LastRoundRequest(**defaults)
 
 
 def test_run_returns_valuation_report():

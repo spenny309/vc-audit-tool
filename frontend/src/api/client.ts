@@ -36,22 +36,31 @@ export interface LastRoundDetails {
   index_pct_change: number;
 }
 
-export interface ValuationRequest {
+export interface CompsRequest {
+  model: 'Comps';
   company_name: string;
-  model: ModelType;
-  // Comps
-  sector?: string;
-  revenue_mm?: number;
-  // DCF
-  projections?: number[];
-  ebitda_margin_pct?: number;
-  discount_rate?: number;
-  terminal_growth_rate?: number;
-  // Last Round
-  last_post_money_valuation_mm?: number;
-  last_round_date?: string;   // "YYYY-MM-DD"
-  index?: string;             // IndexType value, e.g. "Nasdaq Composite"
+  sector: string;
+  revenue_mm: number;
 }
+
+export interface DcfRequest {
+  model: 'DCF';
+  company_name: string;
+  projections: number[];
+  ebitda_margin_pct: number;
+  discount_rate: number;
+  terminal_growth_rate: number;
+}
+
+export interface LastRoundRequest {
+  model: 'Last Round';
+  company_name: string;
+  last_post_money_valuation_mm: number;
+  last_round_date: string;
+  index?: string;
+}
+
+export type ValuationRequest = CompsRequest | DcfRequest | LastRoundRequest;
 
 export interface ValuationReport {
   company_name: string;

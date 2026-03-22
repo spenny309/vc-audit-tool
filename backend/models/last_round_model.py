@@ -3,14 +3,14 @@ from pipeline.pipeline import Pipeline
 from pipeline.last_round.last_round_pipeline import LastRoundPipeline
 from schemas.last_round_context import LastRoundContext
 from schemas.report import ValuationReport
-from schemas.request import ValuationRequest, IndexType
+from schemas.request import LastRoundRequest
 
 
 class LastRoundModel(ValuationModel):
     def __init__(self, pipeline: Pipeline[LastRoundContext] | None = None) -> None:
         self._pipeline = pipeline or LastRoundPipeline()
 
-    def run(self, request: ValuationRequest) -> ValuationReport:
+    def run(self, request: LastRoundRequest) -> ValuationReport:
         context = LastRoundContext(
             company_name=request.company_name,
             last_post_money_valuation_mm=request.last_post_money_valuation_mm,

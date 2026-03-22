@@ -3,14 +3,14 @@ from pipeline.pipeline import Pipeline
 from models.valuation_model import ValuationModel
 from schemas.comps_context import CompsContext
 from schemas.report import ValuationReport
-from schemas.request import ValuationRequest
+from schemas.request import CompsRequest
 
 
 class CompsModel(ValuationModel):
     def __init__(self, pipeline: Pipeline[CompsContext] | None = None) -> None:
         self._pipeline = pipeline or CompsPipeline()
 
-    def run(self, request: ValuationRequest) -> ValuationReport:
+    def run(self, request: CompsRequest) -> ValuationReport:
         context = CompsContext(
             company_name=request.company_name,
             sector=request.sector,

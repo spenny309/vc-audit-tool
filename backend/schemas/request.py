@@ -1,7 +1,8 @@
+from __future__ import annotations
 from datetime import date as _date
 from enum import Enum
-from typing import Optional
-from pydantic import BaseModel, model_validator
+from typing import Annotated, Literal, Optional, Union
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ModelType(str, Enum):
@@ -29,58 +30,86 @@ class IndexType(str, Enum):
     RUSSELL = "Russell 2000"
 
 
-class ValuationRequest(BaseModel):
+class CompsRequest(BaseModel):
+    model: Literal["Comps"]
     company_name: str
-    model: ModelType
+    sector: Sector
+    revenue_mm: float
 
-    # Comps fields — required when model=COMPS
-    sector: Optional[Sector] = None
-    revenue_mm: Optional[float] = None
+    @field_validator("revenue_mm")
+    @classmethod
+    def revenue_must_be_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("revenue_mm must be greater than 0")
+        return v
 
-    # DCF fields — required when model=DCF
-    projections: Optional[list[float]] = None   # exactly 5 values, all > 0
-    ebitda_margin_pct: Optional[float] = None   # 0 < x < 1
-    discount_rate: Optional[float] = None       # 0 < x < 1
-    terminal_growth_rate: Optional[float] = None  # 0 < x < 1, must be < discount_rate
 
-    # Last Round fields — required when model=LAST_ROUND
-    last_post_money_valuation_mm: Optional[float] = None
-    last_round_date: Optional[str] = None
-    index: Optional[IndexType] = None
+class DcfRequest(BaseModel):
+    model: Literal["DCF"]
+    company_name: str
+    projections: list[float]
+    ebitda_margin_pct: float
+    discount_rate: float
+    terminal_growth_rate: float
+
+    @field_validator("projections")
+    @classmethod
+    def projections_must_have_five_years(cls, v: list[float]) -> list[float]:
+        if len(v) != 5:
+            raise ValueError("projections must contain exactly 5 annual values")
+        if any(p <= 0 for p in v):
+            raise ValueError("all projections must be greater than 0")
+        return v
+
+    @field_validator("ebitda_margin_pct", "discount_rate", "terminal_growth_rate")
+    @classmethod
+    def rates_must_be_positive(cls, v: float) -> float:
+        if v <= 0 or v >= 1:
+            raise ValueError("rate must be between 0 and 1 (exclusive)")
+        return v
 
     @model_validator(mode="after")
-    def validate_model_fields(self) -> "ValuationRequest":
-        if self.model == ModelType.COMPS:
-            if self.sector is None:
-                raise ValueError("sector is required for Comps model")
-            if self.revenue_mm is None or self.revenue_mm <= 0:
-                raise ValueError("revenue_mm must be greater than 0 for Comps model")
-        if self.model == ModelType.DCF:
-            if self.projections is None or len(self.projections) != 5:
-                raise ValueError("projections must be a list of exactly 5 values")
-            if any(p <= 0 for p in self.projections):
-                raise ValueError("all projection values must be greater than 0")
-            if self.ebitda_margin_pct is None or not (0 < self.ebitda_margin_pct < 1):
-                raise ValueError("ebitda_margin_pct must be between 0 and 1 (exclusive)")
-            if self.discount_rate is None or not (0 < self.discount_rate < 1):
-                raise ValueError("discount_rate must be between 0 and 1 (exclusive)")
-            if self.terminal_growth_rate is None or not (0 < self.terminal_growth_rate < 1):
-                raise ValueError("terminal_growth_rate must be between 0 and 1 (exclusive)")
-            if self.terminal_growth_rate >= self.discount_rate:
-                raise ValueError("terminal_growth_rate must be less than discount_rate")
-        if self.model == ModelType.LAST_ROUND:
-            if self.last_post_money_valuation_mm is None or self.last_post_money_valuation_mm <= 0:
-                raise ValueError("last_post_money_valuation_mm must be greater than 0 for Last Round model")
-            if self.last_round_date is None:
-                raise ValueError("last_round_date is required for Last Round model")
-            try:
-                parsed = _date.fromisoformat(self.last_round_date)
-            except ValueError:
-                raise ValueError("last_round_date must be a valid ISO date (YYYY-MM-DD)")
-            if parsed > _date.today():
-                raise ValueError("last_round_date cannot be in the future")
-            if parsed < _date(2015, 1, 1):
-                raise ValueError("last_round_date cannot be before 2015-01-01")
-            if self.index is None:
-                self.index = IndexType.NASDAQ
+    def terminal_growth_must_be_less_than_wacc(self) -> "DcfRequest":
+        if self.terminal_growth_rate >= self.discount_rate:
+            raise ValueError("terminal_growth_rate must be less than discount_rate (WACC)")
         return self
+
+
+class LastRoundRequest(BaseModel):
+    model: Literal["Last Round"]
+    company_name: str
+    last_post_money_valuation_mm: float
+    last_round_date: str
+    index: Optional[IndexType] = None
+
+    @field_validator("last_post_money_valuation_mm")
+    @classmethod
+    def valuation_must_be_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("last_post_money_valuation_mm must be greater than 0")
+        return v
+
+    @field_validator("last_round_date")
+    @classmethod
+    def validate_date(cls, v: str) -> str:
+        try:
+            parsed = _date.fromisoformat(v)
+        except ValueError:
+            raise ValueError("last_round_date must be a valid ISO date (YYYY-MM-DD)")
+        if parsed > _date.today():
+            raise ValueError("last_round_date cannot be in the future")
+        if parsed < _date(2015, 1, 1):
+            raise ValueError("last_round_date cannot be before 2015-01-01")
+        return v
+
+    @model_validator(mode="after")
+    def apply_index_default(self) -> "LastRoundRequest":
+        if self.index is None:
+            self.index = IndexType.NASDAQ
+        return self
+
+
+ValuationRequest = Annotated[
+    Union[CompsRequest, DcfRequest, LastRoundRequest],
+    Field(discriminator="model")
+]
