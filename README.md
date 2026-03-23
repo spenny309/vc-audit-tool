@@ -39,9 +39,12 @@ npm install
 npm run dev                    # runs on http://localhost:5173
 ```
 
-**Tests** (with venv active):
+**Tests**:
 ```bash
 cd backend
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 pytest -v
 ```
 
