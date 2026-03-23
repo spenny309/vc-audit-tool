@@ -52,6 +52,13 @@ pytest -v
 
 Open `http://localhost:5173`, select a model, fill in the form, and click **Run Valuation**. The report renders inline with the fair value, methodology details, assumptions, and data sources.
 
+## Tech Stack
+
+- **Frontend**: React + TypeScript, bundled with Vite
+- **Backend**: Python / Flask REST API
+- **Validation**: Pydantic v2 schemas at the API boundary
+- **Tests**: pytest
+
 ## Potential Improvements
 
 - **Real market data**: Replace mocked comp datasets and index history with live API calls (Yahoo Finance, Bloomberg)
