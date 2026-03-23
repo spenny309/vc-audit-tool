@@ -12,14 +12,13 @@ All three assignment methodologies are implemented, selectable per valuation:
 | **Discounted Cash Flow** | Projects 5-year FCF from user revenue forecasts and EBITDA margin, discounts at WACC, adds Gordon Growth terminal value |
 | **Last Round (Market-Adjusted)** | Adjusts last post-money valuation by the % change in a public index (Nasdaq or S&P 500) since the round date |
 
-Every report includes a **fair value estimate**, **assumptions** (one per pipeline stage), **citations** (data sources), and a **narrative explanation** — the full audit trail is built as the pipeline runs, not reconstructed after the fact.
+Every report includes a **fair value estimate**, **assumptions**, **citations** (data sources), and a **narrative explanation** — the full audit trail is built as the pipeline runs, not reconstructed after the fact.
 
 ## Key Design Decisions
 
-- **Pipeline/Stage architecture**: Each model runs a typed `Pipeline[TContext]` of single-responsibility `Stage` objects. Adding a new methodology means adding a new pipeline — no changes to existing code.
+- **Pipeline/Stage architecture**: Each model runs a typed `Pipeline[TContext]` of single-responsibility `Stage` objects. Adding a new methodology means adding a new pipeline — minimal changes to existing code.
 - **Auditable by design**: Stages append to `assumptions` and `citations` as they execute. The audit trail is a natural output of computation, not a post-hoc summary.
 - **Typed request/response schemas**: Requests use a Pydantic v2 discriminated union (`CompsRequest | DcfRequest | LastRoundRequest`) — invalid inputs are rejected at the boundary with structured errors. Nested response objects (`CompsDetails`, `DcfDetails`, `LastRoundDetails`) keep the report self-contained.
-- **No intermediate rounding**: Values stay at full float precision throughout calculations; rounding happens only when constructing output strings and UI display, avoiding accumulated drift.
 - **Mocked market data**: Comp datasets and index history are hardcoded mocks. Each report's `citations` field records this explicitly so the source is always traceable.
 
 ## Setup
@@ -40,7 +39,11 @@ npm install
 npm run dev                    # runs on http://localhost:5173
 ```
 
-**Tests**: `cd backend && pytest -v` — 169 tests
+**Tests** (with venv active):
+```bash
+cd backend
+pytest -v
+```
 
 ## Usage
 
