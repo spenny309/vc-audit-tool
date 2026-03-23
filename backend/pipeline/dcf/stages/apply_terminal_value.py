@@ -4,17 +4,16 @@ from schemas.dcf_context import DcfContext
 
 class DcfApplyTerminalValueStage(Stage[DcfContext]):
     def execute(self, context: DcfContext) -> DcfContext:
-        r = context.discount_rate
-        g = context.terminal_growth_rate
-        fcf_5 = context.cashflows[4].fcf_mm
-        undiscounted_tv = fcf_5 * (1 + g) / (r - g)
-        context.terminal_value_mm = undiscounted_tv / (1 + r) ** 5
-        sum_discounted = sum(item.discounted_fcf_mm for item in context.cashflows)
-        context.fair_value_mm = sum_discounted + context.terminal_value_mm
-        tv = context.terminal_value_mm
-        g_pct = g * 100
+        discount_rate = context.discount_rate
+        growth_rate = context.terminal_growth_rate
+        terminal_year_fcf_mm = context.cashflows[4].fcf_mm
+        undiscounted_terminal_value_mm = terminal_year_fcf_mm * (1 + growth_rate) / (discount_rate - growth_rate)
+        context.terminal_value_mm = undiscounted_terminal_value_mm / (1 + discount_rate) ** 5
+        sum_discounted_fcf_mm = sum(cashflow.discounted_fcf_mm for cashflow in context.cashflows)
+        context.fair_value_mm = sum_discounted_fcf_mm + context.terminal_value_mm
+        growth_rate_pct = growth_rate * 100
         context.assumptions.append(
-            f"Discounted terminal value of ${tv:.2f}M calculated using Gordon Growth Model "
-            f"at {g_pct:.1f}% perpetual growth rate"
+            f"Discounted terminal value of ${context.terminal_value_mm:.2f}M calculated using Gordon Growth Model "
+            f"at {growth_rate_pct:.1f}% perpetual growth rate"
         )
         return context

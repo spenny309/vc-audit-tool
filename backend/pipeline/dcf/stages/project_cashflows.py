@@ -11,9 +11,9 @@ class DcfProjectCashflowsStage(Stage[DcfContext]):
             context.cashflows.append(
                 DcfYearData(year=year, revenue_mm=revenue_mm, fcf_mm=fcf_mm, discounted_fcf_mm=0.0)
             )
-        pct = context.ebitda_margin_pct * 100
+        ebitda_margin_pct = context.ebitda_margin_pct * 100
         context.assumptions.append(
-            f"EBITDA margin of {pct:.1f}% applied to revenue projections to derive free cash flow"
+            f"EBITDA margin of {ebitda_margin_pct:.1f}% applied to revenue projections to derive free cash flow"
         )
         context.citations.append("Projections provided by user")
         return context

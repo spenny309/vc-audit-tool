@@ -6,8 +6,8 @@ from schemas.report import ValuationReport, CompsDetails
 class CompsBuildReportStage(Stage[CompsContext]):
     def execute(self, context: CompsContext) -> CompsContext:
         explanation = (
-            f"{context.company_name} was valued at ${context.fair_value_mm}M "
-            f"using a mean EV/Revenue multiple of {context.mean_revenue_multiple}x "
+            f"{context.company_name} was valued at ${context.fair_value_mm:.2f}M "
+            f"using a mean EV/Revenue multiple of {context.mean_revenue_multiple:.2f}x "
             f"applied to ${context.revenue_mm:.1f}M LTM revenue, "
             f"derived from {len(context.comps)} {context.sector.value} comparables."
         )
