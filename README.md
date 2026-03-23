@@ -52,13 +52,6 @@ pytest -v
 
 Open `http://localhost:5173`, select a model, fill in the form, and click **Run Valuation**. The report renders inline with the fair value, methodology details, assumptions, and data sources.
 
-API directly (`POST /api/valuate`):
-```json
-{ "model": "Comps", "company_name": "Modus", "sector": "SaaS", "revenue_mm": 10.0 }
-{ "model": "DCF", "company_name": "Alpha", "projections": [10,12,14,16,18], "ebitda_margin_pct": 0.20, "discount_rate": 0.15, "terminal_growth_rate": 0.03 }
-{ "model": "Last Round", "company_name": "Beta", "last_post_money_valuation_mm": 100.0, "last_round_date": "2021-06-30" }
-```
-
 ## Potential Improvements
 
 - **Real market data**: Replace mocked comp datasets and index history with live API calls (Yahoo Finance, Bloomberg)
