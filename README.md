@@ -1,101 +1,61 @@
 # VC Audit Tool
 
-A structured, auditable backend service for estimating the fair value of private VC portfolio companies using **Comparable Company Analysis (Comps)**.
+Auditable fair value estimates for private VC portfolio companies — React frontend + Flask backend.
 
-## Overview
+## Approach
 
-VC auditors need a consistent, traceable workflow for valuing private, illiquid portfolio companies. This tool implements a Comps-based methodology: it selects a set of publicly-traded peer companies, computes a mean EV/Revenue multiple, and applies that multiple to the target company's LTM revenue.
+All three assignment methodologies are implemented, selectable per valuation:
 
-**Chosen methodology: Comparable Company Analysis**
+| Model | Logic |
+|---|---|
+| **Comparable Company Analysis** | Fetches sector peer group, computes mean EV/Revenue multiple, applies to LTM revenue |
+| **Discounted Cash Flow** | Projects 5-year FCF from user revenue forecasts and EBITDA margin, discounts at WACC, adds Gordon Growth terminal value |
+| **Last Round (Market-Adjusted)** | Adjusts last post-money valuation by the % change in a public index (Nasdaq or S&P 500) since the round date |
 
-The system identifies comparable public companies by sector, computes the mean EV/Revenue multiple across the peer group, and applies it to the private company's revenue to produce a fair value estimate. Every step in the process is recorded in the report's `assumptions` and `citations` fields.
+Every report includes a **fair value estimate**, **assumptions** (one per pipeline stage), **citations** (data sources), and a **narrative explanation** — the full audit trail is built as the pipeline runs, not reconstructed after the fact.
 
 ## Key Design Decisions
 
-- **Pipeline architecture**: The valuation workflow is modelled as a `Pipeline` of `Stage` objects. Each stage has a single responsibility and enriches a shared `CompsContext` as it runs.
-- **OOP extensibility**: `ValuationModel`, `Pipeline`, and `Stage` are abstract base classes. Adding a new methodology (e.g. DCF) requires implementing a new `ValuationModel` + `Pipeline` pair — no changes to existing code.
-- **Auditable by design**: Each stage appends to `assumptions` and `citations` as it runs. The audit trail is built naturally through the pipeline, not reconstructed after the fact.
-- **Mocked data**: External market data (Yahoo Finance API) is mocked for this implementation. The data source is recorded explicitly in every report's `citations`.
+- **Pipeline/Stage architecture**: Each model runs a typed `Pipeline[TContext]` of single-responsibility `Stage` objects. Adding a new methodology means adding a new pipeline — no changes to existing code.
+- **Auditable by design**: Stages append to `assumptions` and `citations` as they execute. The audit trail is a natural output of computation, not a post-hoc summary.
+- **Typed request/response schemas**: Requests use a Pydantic v2 discriminated union (`CompsRequest | DcfRequest | LastRoundRequest`) — invalid inputs are rejected at the boundary with structured errors. Nested response objects (`CompsDetails`, `DcfDetails`, `LastRoundDetails`) keep the report self-contained.
+- **No intermediate rounding**: Values stay at full float precision throughout calculations; rounding happens only when constructing output strings and UI display, avoiding accumulated drift.
+- **Mocked market data**: Comp datasets and index history are hardcoded mocks. Each report's `citations` field records this explicitly so the source is always traceable.
 
 ## Setup
 
-**Backend:**
-
-Mac/Linux:
+**Backend** (Python 3.11+):
 ```bash
 cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python app.py
-```
-
-Windows:
-```powershell
-cd backend
 python -m venv venv
-venv\Scripts\activate
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python app.py
+python app.py                  # runs on http://localhost:5000
 ```
 
-**Frontend:**
+**Frontend**:
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev                    # runs on http://localhost:5173
 ```
 
-Navigate to `http://localhost:5173`.
+**Tests**: `cd backend && pytest -v` — 169 tests
 
-## Running Tests
+## Usage
 
-Mac/Linux:
-```bash
-cd backend
-source venv/bin/activate
-pytest -v
-```
+Open `http://localhost:5173`, select a model, fill in the form, and click **Run Valuation**. The report renders inline with the fair value, methodology details, assumptions, and data sources.
 
-Windows:
-```powershell
-cd backend
-venv\Scripts\activate
-pytest -v
-```
-
-## Usage Example
-
-Submit a POST request to `http://localhost:5000/api/valuate`:
+API directly (`POST /api/valuate`):
 ```json
-{
-  "company_name": "Modus",
-  "sector": "SaaS",
-  "revenue_mm": 10.0
-}
-```
-
-**Response:**
-```json
-{
-  "company_name": "Modus",
-  "methodology": "Comparable Company Analysis",
-  "fair_value_mm": 62.9,
-  "mean_revenue_multiple": 6.29,
-  "comps_used": [...],
-  "assumptions": [
-    "Target company: Modus, Sector: SaaS, LTM Revenue: $10.0M",
-    "Selected 4 SaaS comparables",
-    "Mean EV/Revenue multiple of 6.29x across 4 comparables",
-    "Mean multiple of 6.29x applied to $10.0M LTM revenue"
-  ],
-  "citations": ["Mock dataset (Yahoo Finance API in production)"],
-  "explanation": "Modus was valued at $62.9M using a mean EV/Revenue multiple of 6.29x applied to $10.0M LTM revenue, derived from 4 SaaS comparables."
-}
+{ "model": "Comps", "company_name": "Modus", "sector": "SaaS", "revenue_mm": 10.0 }
+{ "model": "DCF", "company_name": "Alpha", "projections": [10,12,14,16,18], "ebitda_margin_pct": 0.20, "discount_rate": 0.15, "terminal_growth_rate": 0.03 }
+{ "model": "Last Round", "company_name": "Beta", "last_post_money_valuation_mm": 100.0, "last_round_date": "2021-06-30" }
 ```
 
 ## Potential Improvements
 
-- Integrate a real financial data API (Yahoo Finance, Bloomberg) in `SelectCompsStage` to replace mock data
-- Add additional methodologies (DCF, Last Round) as new `ValuationModel` + `Pipeline` implementations
-- Add filtering logic to `SelectCompsStage` to narrow the comp set by size or growth rate
+- **Real market data**: Replace mocked comp datasets and index history with live API calls (Yahoo Finance, Bloomberg)
+- **Richer DCF inputs**: Accept revenue, expenses, and capex separately rather than a single EBITDA margin approximation
+- **Comp filtering**: Narrow the peer group by size and growth profile, not just sector
+- **Valuation ranges**: Return a confidence interval (e.g. 25th–75th percentile of comp multiples) alongside the point estimate
