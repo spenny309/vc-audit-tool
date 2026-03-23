@@ -33,8 +33,8 @@ def test_last_round_nasdaq_returns_200_with_exact_fair_value(client):
     index_at_round = INDEX_QUARTERLY_CLOSES[IndexType.NASDAQ][date(2020, 3, 31)]
     index_today = INDEX_VALUE_TODAY[IndexType.NASDAQ]
     pct_change = (index_today - index_at_round) / index_at_round
-    expected_fair_value = round(100.0 * (1 + pct_change), 2)
-    assert data["fair_value_mm"] == expected_fair_value
+    expected_fair_value = 100.0 * (1 + pct_change)
+    assert data["fair_value_mm"] == pytest.approx(expected_fair_value)
 
 
 def test_last_round_sp500_returns_correct_index_name(client):

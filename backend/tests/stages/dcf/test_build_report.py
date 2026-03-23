@@ -42,7 +42,7 @@ def test_build_report_company_name(context_after_terminal):
 def test_build_report_fair_value(context_after_terminal):
     stage = DcfBuildReportStage()
     result = stage.execute(context_after_terminal)
-    assert result.report.fair_value_mm == 19.81
+    assert result.report.fair_value_mm == pytest.approx(19.81, rel=1e-3)
 
 
 def test_build_report_dcf_cashflows_populated(context_after_terminal):
@@ -56,7 +56,7 @@ def test_build_report_dcf_cashflows_populated(context_after_terminal):
 def test_build_report_rate_fields_populated(context_after_terminal):
     stage = DcfBuildReportStage()
     result = stage.execute(context_after_terminal)
-    assert result.report.dcf_details.terminal_value_mm == 11.95
+    assert result.report.dcf_details.terminal_value_mm == pytest.approx(11.95, rel=1e-3)
     assert result.report.dcf_details.ebitda_margin_pct == 0.20
     assert result.report.dcf_details.discount_rate == 0.15
     assert result.report.dcf_details.terminal_growth_rate == 0.03

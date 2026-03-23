@@ -8,9 +8,9 @@ class DcfApplyTerminalValueStage(Stage[DcfContext]):
         g = context.terminal_growth_rate
         fcf_5 = context.cashflows[4].fcf_mm
         undiscounted_tv = fcf_5 * (1 + g) / (r - g)
-        context.terminal_value_mm = round(undiscounted_tv / (1 + r) ** 5, 2)
+        context.terminal_value_mm = undiscounted_tv / (1 + r) ** 5
         sum_discounted = sum(item.discounted_fcf_mm for item in context.cashflows)
-        context.fair_value_mm = round(sum_discounted + context.terminal_value_mm, 2)
+        context.fair_value_mm = sum_discounted + context.terminal_value_mm
         tv = context.terminal_value_mm
         g_pct = g * 100
         context.assumptions.append(

@@ -1,3 +1,4 @@
+import pytest
 from models.dcf_model import DcfModel
 from schemas.request import DcfRequest
 
@@ -39,8 +40,8 @@ def test_dcf_integration_cashflow_year1():
     report = model.run(_make_request())
     cf1 = report.dcf_details.dcf_cashflows[0]
     assert cf1.revenue_mm == 10.0
-    assert cf1.fcf_mm == 2.0
-    assert cf1.discounted_fcf_mm == 1.74
+    assert cf1.fcf_mm == pytest.approx(2.0)
+    assert cf1.discounted_fcf_mm == pytest.approx(1.74, rel=1e-2)
 
 
 def test_dcf_integration_cashflow_year5():
@@ -48,20 +49,20 @@ def test_dcf_integration_cashflow_year5():
     report = model.run(_make_request())
     cf5 = report.dcf_details.dcf_cashflows[4]
     assert cf5.revenue_mm == 14.0
-    assert cf5.fcf_mm == 2.8
-    assert cf5.discounted_fcf_mm == 1.39
+    assert cf5.fcf_mm == pytest.approx(2.8)
+    assert cf5.discounted_fcf_mm == pytest.approx(1.39, rel=1e-2)
 
 
 def test_dcf_integration_terminal_value():
     model = DcfModel()
     report = model.run(_make_request())
-    assert report.dcf_details.terminal_value_mm == 11.95
+    assert report.dcf_details.terminal_value_mm == pytest.approx(11.95, rel=1e-3)
 
 
 def test_dcf_integration_fair_value():
     model = DcfModel()
     report = model.run(_make_request())
-    assert report.fair_value_mm == 19.81
+    assert report.fair_value_mm == pytest.approx(19.81, rel=1e-3)
 
 
 def test_dcf_integration_rate_fields():
@@ -84,7 +85,7 @@ def test_dcf_integration_fair_value_equals_cashflows_plus_tv():
     model = DcfModel()
     report = model.run(_make_request())
     sum_discounted = sum(cf.discounted_fcf_mm for cf in report.dcf_details.dcf_cashflows)
-    assert round(sum_discounted + report.dcf_details.terminal_value_mm, 2) == report.fair_value_mm
+    assert sum_discounted + report.dcf_details.terminal_value_mm == pytest.approx(report.fair_value_mm)
 
 
 def test_dcf_integration_comps_fields_are_none():

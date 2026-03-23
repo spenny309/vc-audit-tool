@@ -23,5 +23,5 @@ def test_computes_fair_value_with_decimal_multiple():
 
 def test_appends_assumption():
     result = CompsApplyMultipleStage().execute(make_context_with_multiple())
-    assert any("8.0x" in a for a in result.assumptions)
+    assert any("8.00x" in a for a in result.assumptions)
     assert any("$10.00M" in a for a in result.assumptions)

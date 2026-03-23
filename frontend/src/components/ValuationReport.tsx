@@ -48,7 +48,7 @@ export function ValuationReport({ report }: Props) {
                   <td>{comp.name}</td>
                   <td>{comp.enterprise_value_mm.toLocaleString()}</td>
                   <td>{comp.revenue_mm.toLocaleString()}</td>
-                  <td>{comp.revenue_multiple}x</td>
+                  <td>{comp.revenue_multiple.toFixed(2)}x</td>
                 </tr>
               ))}
             </tbody>

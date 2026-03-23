@@ -14,9 +14,7 @@ class LastRoundApplyAdjustmentStage(Stage[LastRoundContext]):
             / context.index_value_at_round
         )
         context.index_pct_change = index_pct_change
-        context.fair_value_mm = round(
-            context.last_post_money_valuation_mm * (1 + index_pct_change), 2
-        )
+        context.fair_value_mm = context.last_post_money_valuation_mm * (1 + index_pct_change)
         index_name = context.index.value
         context.assumptions.append(
             f"{index_name} moved {index_pct_change * 100:+.1f}% from round date to today; "

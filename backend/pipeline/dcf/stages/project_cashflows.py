@@ -7,7 +7,7 @@ class DcfProjectCashflowsStage(Stage[DcfContext]):
     def execute(self, context: DcfContext) -> DcfContext:
         for year in range(1, 6):
             revenue_mm = context.projections[year - 1]
-            fcf_mm = round(revenue_mm * context.ebitda_margin_pct, 2)
+            fcf_mm = revenue_mm * context.ebitda_margin_pct
             context.cashflows.append(
                 DcfYearData(year=year, revenue_mm=revenue_mm, fcf_mm=fcf_mm, discounted_fcf_mm=0.0)
             )

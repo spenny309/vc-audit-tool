@@ -29,7 +29,7 @@ def test_apply_terminal_value_sets_terminal_value_mm(context_after_discount):
 def test_apply_terminal_value_correct_amount(context_after_discount):
     stage = DcfApplyTerminalValueStage()
     result = stage.execute(context_after_discount)
-    assert result.terminal_value_mm == 11.95
+    assert result.terminal_value_mm == pytest.approx(11.95, rel=1e-3)
 
 
 def test_apply_terminal_value_sets_fair_value_mm(context_after_discount):
@@ -42,7 +42,7 @@ def test_apply_terminal_value_sets_fair_value_mm(context_after_discount):
 def test_apply_terminal_value_fair_value_equals_sum_plus_tv(context_after_discount):
     stage = DcfApplyTerminalValueStage()
     result = stage.execute(context_after_discount)
-    assert result.fair_value_mm == 19.81
+    assert result.fair_value_mm == pytest.approx(19.81, rel=1e-3)
 
 
 def test_apply_terminal_value_appends_assumption(context_after_discount):

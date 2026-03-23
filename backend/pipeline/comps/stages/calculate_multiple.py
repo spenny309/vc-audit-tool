@@ -17,16 +17,14 @@ class CompsCalculateMultipleStage(Stage[CompsContext]):
                 name=raw.name,
                 enterprise_value_mm=raw.enterprise_value_mm,
                 revenue_mm=raw.revenue_mm,
-                revenue_multiple=round(multiple, 2),
+                revenue_multiple=multiple,
             ))
 
         context.comps = comps
-        context.mean_revenue_multiple = round(
-            sum(c.revenue_multiple for c in comps) / len(comps), 2
-        )
+        context.mean_revenue_multiple = sum(c.revenue_multiple for c in comps) / len(comps)
 
         context.assumptions.append(
-            f"Mean EV/Revenue multiple of {context.mean_revenue_multiple}x "
+            f"Mean EV/Revenue multiple of {context.mean_revenue_multiple:.2f}x "
             f"across {len(comps)} comparables"
         )
         return context

@@ -38,4 +38,4 @@ def test_populates_comps_with_all_fields():
 def test_appends_assumption():
     result = CompsCalculateMultipleStage().execute(make_context_with_raw_comps())
     assert any("Mean EV/Revenue multiple" in a for a in result.assumptions)
-    assert any("20.0x" in a for a in result.assumptions)
+    assert any("20.00x" in a for a in result.assumptions)

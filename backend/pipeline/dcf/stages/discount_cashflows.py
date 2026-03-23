@@ -8,7 +8,7 @@ class DcfDiscountCashflowsStage(Stage[DcfContext]):
         r = context.discount_rate
         discounted = []
         for item in context.cashflows:
-            discounted_fcf_mm = round(item.fcf_mm / (1 + r) ** item.year, 2)
+            discounted_fcf_mm = item.fcf_mm / (1 + r) ** item.year
             discounted.append(DcfYearData(
                 year=item.year,
                 revenue_mm=item.revenue_mm,

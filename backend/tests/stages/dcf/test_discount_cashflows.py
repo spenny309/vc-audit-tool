@@ -26,15 +26,15 @@ def test_discount_cashflows_populates_discounted_values(context_after_project):
 def test_discount_cashflows_year1_correct(context_after_project):
     stage = DcfDiscountCashflowsStage()
     result = stage.execute(context_after_project)
-    # Year 1: fcf=2.0, r=0.15, discounted = round(2.0 / 1.15^1, 2) = round(1.7391, 2) = 1.74
-    assert result.cashflows[0].discounted_fcf_mm == 1.74
+    # Year 1: fcf=2.0, r=0.15, discounted = 2.0 / 1.15^1 ≈ 1.739
+    assert result.cashflows[0].discounted_fcf_mm == pytest.approx(1.74, rel=1e-2)
 
 
 def test_discount_cashflows_year5_correct(context_after_project):
     stage = DcfDiscountCashflowsStage()
     result = stage.execute(context_after_project)
-    # Year 5: fcf=2.8, r=0.15, discounted = round(2.8 / 1.15^5, 2) = round(2.8/2.0114, 2) = round(1.3916, 2) = 1.39
-    assert result.cashflows[4].discounted_fcf_mm == 1.39
+    # Year 5: fcf=2.8, r=0.15, discounted = 2.8 / 1.15^5 ≈ 1.392
+    assert result.cashflows[4].discounted_fcf_mm == pytest.approx(1.39, rel=1e-2)
 
 
 def test_discount_cashflows_later_years_discounted_more(context_after_project):
@@ -55,5 +55,5 @@ def test_discount_cashflows_appends_assumption(context_after_project):
 def test_discount_cashflows_preserves_fcf_values(context_after_project):
     stage = DcfDiscountCashflowsStage()
     result = stage.execute(context_after_project)
-    assert result.cashflows[0].fcf_mm == 2.0
-    assert result.cashflows[4].fcf_mm == 2.8
+    assert result.cashflows[0].fcf_mm == pytest.approx(2.0)
+    assert result.cashflows[4].fcf_mm == pytest.approx(2.8)

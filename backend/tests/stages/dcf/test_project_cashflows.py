@@ -37,9 +37,9 @@ def test_project_cashflows_fcf_equals_revenue_times_margin(context):
     stage = DcfProjectCashflowsStage()
     result = stage.execute(context)
     # Year 1: 10.0 * 0.20 = 2.0
-    assert result.cashflows[0].fcf_mm == 2.0
+    assert result.cashflows[0].fcf_mm == pytest.approx(2.0)
     # Year 5: 14.0 * 0.20 = 2.8
-    assert result.cashflows[4].fcf_mm == 2.8
+    assert result.cashflows[4].fcf_mm == pytest.approx(2.8)
 
 
 def test_project_cashflows_appends_assumption(context):
